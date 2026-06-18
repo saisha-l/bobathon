@@ -2,609 +2,551 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Bob WYD" />
+<meta name="theme-color" content="#dce9f7" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icons/icon.svg" />
 <title>BOB, WYD?</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg:        #dce9f7;
-    --bg2:       #e8f2fb;
-    --surface:   #ffffff;
-    --surface2:  #f0f5fc;
-    --border:    #d4e2f0;
-    --text:      #1a1a2e;
-    --muted:     #7a8faa;
-    --accent:    #5b5bd6;
-    --accent-lt: #eeeeff;
-    --green:     #22c55e;
-    --green-lt:  #dcfce7;
-    --yellow:    #f59e0b;
-    --yellow-lt: #fef9c3;
-    --red:       #ef4444;
-    --red-lt:    #fee2e2;
-    --pink:      #f472b6;
-    --pink-lt:   #fce7f3;
-    --blue:      #3b82f6;
-    --blue-lt:   #dbeafe;
-    --radius:    20px;
-    --radius-sm: 12px;
-    --radius-pill: 999px;
-    --shadow:    0 4px 24px rgba(91,91,214,0.10);
-    --shadow-sm: 0 2px 8px rgba(91,91,214,0.08);
-  }
+/* ── TOKENS ── */
+:root {
+  --bg:         #dce9f7;
+  --surface:    #ffffff;
+  --surface2:   #eef4fb;
+  --border:     #d0e2f2;
+  --text:       #1a1a2e;
+  --muted:      #8a9ab8;
+  --accent:     #5b5bd6;
+  --accent-lt:  #eeefff;
+  --green:      #22c55e;
+  --green-lt:   #dcfce7;
+  --yellow:     #f5e178;
+  --yellow-dk:  #7a5c00;
+  --red:        #ef4444;
+  --pink-lt:    #fce7f3;
+  --pink:       #f472b6;
+  --r-card:     22px;
+  --r-pill:     999px;
+  --r-sm:       14px;
+  --shadow:     0 4px 20px rgba(91,91,214,0.10);
+  --shadow-sm:  0 2px 8px  rgba(91,91,214,0.07);
+  /* safe area insets */
+  --sat: env(safe-area-inset-top,    0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left,   0px);
+  --sar: env(safe-area-inset-right,  0px);
+}
 
-  body {
-    font-family: "Nunito", -apple-system, "Segoe UI", system-ui, sans-serif;
-    background: linear-gradient(160deg, #c9dff5 0%, #dce9f7 40%, #e8f0fb 100%);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 15px;
-    line-height: 1.6;
-  }
+/* ── BASE ── */
+html, body {
+  height: 100%; width: 100%;
+  overscroll-behavior: none;
+}
+body {
+  font-family: -apple-system, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;          /* app chrome — inner scroll per screen */
+}
 
-  /* ── SCREENS ── */
-  .screen { display: none; min-height: 100vh; }
-  .screen.active { display: flex; }
+/* ── APP SHELL ── */
+#app {
+  position: fixed; inset: 0;
+  padding-top: var(--sat);
+  padding-bottom: var(--sab);
+  padding-left: var(--sal);
+  padding-right: var(--sar);
+  display: flex; flex-direction: column;
+}
 
-  /* ── SHARED BUTTONS ── */
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center;
-    gap: 8px; border: none; font-size: 15px; font-weight: 700;
-    cursor: pointer; transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
-    font-family: inherit; text-decoration: none;
-    border-radius: var(--radius-pill);
-    padding: 12px 28px;
-  }
-  .btn:active  { transform: scale(0.97); }
-  .btn:hover   { opacity: 0.88; }
-  .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
-  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 16px rgba(91,91,214,0.3); }
-  .btn-soft    { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
-  .btn-green   { background: var(--green);  color: #fff; box-shadow: 0 4px 16px rgba(34,197,94,0.25); }
-  .btn-yellow  { background: #f5e178; color: #5a4500; box-shadow: 0 4px 16px rgba(245,225,120,0.4); }
-  .btn-ghost   { background: transparent; color: var(--muted); border: 2px solid var(--border); }
-  .btn-sm      { padding: 7px 18px; font-size: 13px; }
-  .btn-danger  { background: var(--red-lt); color: var(--red); }
+/* ── SCREENS ── */
+.screen {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+.screen.active { display: flex; }
 
-  /* ── SHARED FORM ELEMENTS ── */
-  .form-input {
-    background: var(--surface); border: 2px solid var(--border);
-    border-radius: var(--radius-sm); padding: 12px 16px;
-    color: var(--text); font-size: 15px; font-family: inherit;
-    outline: none; width: 100%; transition: border-color 0.15s;
-  }
-  .form-input:focus { border-color: var(--accent); }
-  .form-input::placeholder { color: var(--muted); }
-  .form-label {
-    font-size: 11px; font-weight: 800; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px;
-    display: block;
-  }
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-error { color: var(--red); font-size: 12px; font-weight: 600; }
+/* ── SHARED BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; border: none; font-family: inherit; font-size: 15px;
+  font-weight: 700; cursor: pointer; border-radius: var(--r-pill);
+  padding: 13px 28px; transition: opacity .15s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active  { transform: scale(0.96); opacity: 0.85; }
+.btn:disabled{ opacity: .4; pointer-events: none; }
+.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(91,91,214,.30); }
+.btn-soft    { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+.btn-yellow  { background: var(--yellow);  color: var(--yellow-dk); box-shadow: 0 4px 14px rgba(245,225,120,.4); font-size: 17px; padding: 16px 36px; }
+.btn-ghost   { background: transparent; color: var(--muted); border: 2px solid var(--border); }
+.btn-icon    { width: 40px; height: 40px; padding: 0; border-radius: 50%; background: transparent; border: none; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
+.btn-icon:active { transform: scale(0.9); }
+.btn-sm      { padding: 8px 18px; font-size: 13px; }
+.btn-danger  { background: #fee2e2; color: var(--red); }
 
-  /* ── CARD ── */
-  .card {
-    background: var(--surface); border-radius: var(--radius);
-    box-shadow: var(--shadow); padding: 28px;
-  }
+/* ── INPUTS ── */
+.inp {
+  width: 100%; background: var(--surface); border: 2px solid var(--border);
+  border-radius: var(--r-sm); padding: 13px 16px;
+  color: var(--text); font-size: 16px; font-family: inherit;
+  outline: none; -webkit-appearance: none;
+  transition: border-color .15s;
+}
+.inp:focus { border-color: var(--accent); }
+.inp::placeholder { color: var(--muted); }
+.lbl { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .7px; display: block; margin-bottom: 6px; }
+.fgrp { display: flex; flex-direction: column; gap: 6px; }
+.ferr { color: var(--red); font-size: 12px; font-weight: 700; }
 
-  /* ── PILL BADGE ── */
-  .pill {
-    display: inline-flex; align-items: center; gap: 5px;
-    border-radius: var(--radius-pill); padding: 5px 14px;
-    font-size: 13px; font-weight: 700;
-  }
-  .pill-accent  { background: var(--accent-lt); color: var(--accent); }
-  .pill-green   { background: var(--green-lt);  color: #15803d; }
-  .pill-yellow  { background: var(--yellow-lt); color: #92400e; }
-  .pill-pink    { background: var(--pink-lt);   color: #be185d; }
-  .pill-blue    { background: var(--blue-lt);   color: #1d4ed8; }
-  .pill-muted   { background: var(--surface2);  color: var(--muted); }
+/* ── PILL ── */
+.pill { display: inline-flex; align-items: center; gap: 5px; border-radius: var(--r-pill); padding: 5px 14px; font-size: 13px; font-weight: 700; }
+.pill-accent { background: var(--accent-lt); color: var(--accent); }
+.pill-green  { background: var(--green-lt);  color: #15803d; }
+.pill-muted  { background: var(--surface2);  color: var(--muted); }
 
-  /* ── AVATAR FACES (big SVG-style emoji circles) ── */
-  .avatar-face {
-    width: 100px; height: 100px; border-radius: 50%;
-    background: var(--surface2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 56px; flex-shrink: 0;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    border: 3px solid rgba(255,255,255,0.9);
-    transition: transform 0.15s;
-    user-select: none;
-  }
-  .avatar-face:hover { transform: scale(1.06); }
-  .avatar-face.me { border-color: var(--accent); border-width: 3px; }
-  .avatar-face.sm {
-    width: 56px; height: 56px; font-size: 30px;
-  }
-  .avatar-face.xs {
-    width: 38px; height: 38px; font-size: 20px;
-    box-shadow: none; border-width: 2px;
-  }
+/* ── STEP DOTS ── */
+.step-dots { display: flex; gap: 7px; justify-content: center; }
+.step-dot  { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all .2s; }
+.step-dot.on { background: var(--accent); width: 22px; border-radius: 4px; }
 
-  /* ── SPINNER ── */
-  .spinner {
-    width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4);
-    border-top-color: #fff; border-radius: 50%;
-    animation: spin 0.7s linear infinite; display: inline-block;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ── SPINNER ── */
+.spin { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .65s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── TOAST ── */
-  .toast {
-    position: fixed; bottom: 28px; left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--text); color: #fff;
-    padding: 11px 24px; border-radius: var(--radius-pill);
-    font-size: 14px; font-weight: 700; z-index: 9999;
-    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
-    pointer-events: none; box-shadow: var(--shadow);
-  }
-  .toast.show   { transform: translateX(-50%) translateY(0); }
-  .toast.error  { background: var(--red); }
-  .toast.success{ background: var(--green); }
+/* ── TOAST ── */
+#toast {
+  position: fixed; bottom: calc(var(--sab) + 24px); left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--text); color: #fff;
+  padding: 11px 22px; border-radius: var(--r-pill);
+  font-size: 14px; font-weight: 700; z-index: 999;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none; box-shadow: var(--shadow); white-space: nowrap;
+}
+#toast.show   { transform: translateX(-50%) translateY(0); }
+#toast.err    { background: var(--red); }
+#toast.ok     { background: var(--green); }
 
-  /* ── STEP DOTS ── */
-  .step-dots { display: flex; gap: 8px; justify-content: center; }
-  .step-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--border); transition: all 0.2s;
-  }
-  .step-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+/* ── FLASH ── */
+.flash { animation: fl .35s; }
+@keyframes fl { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-  /* ──────────────────────────────────────────
-     LANDING
-  ────────────────────────────────────────── */
-  #screen-landing {
-    flex-direction: column; align-items: center;
-    justify-content: center; gap: 28px; padding: 48px 24px;
-  }
-  .landing-hero { text-align: center; }
-  .landing-hero h1 {
-    font-size: 56px; font-weight: 900; letter-spacing: -2px;
-    color: var(--text); line-height: 1.1;
-  }
-  .landing-hero h1 span { color: var(--accent); }
-  .landing-hero p { color: var(--muted); font-size: 17px; margin-top: 10px; font-weight: 600; }
-  .landing-avatars {
-    display: flex; gap: -8px; justify-content: center;
-  }
-  .landing-avatars .avatar-face {
-    margin-left: -12px; border: 3px solid var(--bg);
-  }
-  .landing-avatars .avatar-face:first-child { margin-left: 0; }
-  .landing-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
-  .landing-features {
-    display: flex; gap: 8px; flex-wrap: wrap;
-    justify-content: center; max-width: 420px;
-  }
-  .feat-chip {
-    background: var(--surface); border-radius: var(--radius-pill);
-    padding: 5px 14px; font-size: 12px; font-weight: 700;
-    color: var(--muted); box-shadow: var(--shadow-sm);
-  }
+/* ══════════════════════════════════════
+   LANDING
+══════════════════════════════════════ */
+#s-landing {
+  align-items: center; justify-content: center;
+  gap: 28px; padding: 40px 28px;
+}
+.land-title { text-align: center; }
+.land-title h1 { font-size: 52px; font-weight: 900; letter-spacing: -2px; line-height: 1; }
+.land-title h1 span { color: var(--accent); }
+.land-title p  { color: var(--muted); font-size: 16px; font-weight: 600; margin-top: 8px; }
+.land-faces {
+  display: flex; justify-content: center;
+}
+.land-faces .face-bubble {
+  width: 72px; height: 72px; font-size: 42px; margin-left: -14px;
+  border: 3px solid var(--bg);
+}
+.land-faces .face-bubble:first-child { margin-left: 0; }
+.land-btns   { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px; }
+.land-chips  { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; max-width: 340px; }
+.chip { background: var(--surface); border-radius: var(--r-pill); padding: 5px 13px; font-size: 12px; font-weight: 700; color: var(--muted); box-shadow: var(--shadow-sm); }
 
-  /* ──────────────────────────────────────────
-     FORM SCREENS (create / join)
-  ────────────────────────────────────────── */
-  .form-screen {
-    flex-direction: column; align-items: center;
-    justify-content: center; padding: 40px 20px;
-  }
-  .form-card {
-    background: var(--surface); border-radius: var(--radius);
-    box-shadow: var(--shadow); padding: 32px;
-    width: 100%; max-width: 440px;
-    display: flex; flex-direction: column; gap: 20px;
-  }
-  .form-card h2 { font-size: 24px; font-weight: 900; color: var(--text); }
+/* ══════════════════════════════════════
+   FORM CARD SCREENS
+══════════════════════════════════════ */
+.form-screen {
+  align-items: center; justify-content: flex-start;
+  overflow-y: auto; padding: 28px 20px 40px;
+}
+.fcard {
+  background: var(--surface); border-radius: var(--r-card);
+  box-shadow: var(--shadow); padding: 28px 24px;
+  width: 100%; max-width: 420px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.fcard h2 { font-size: 22px; font-weight: 900; }
 
-  /* avatar picker */
-  .avatar-grid { display: flex; gap: 8px; flex-wrap: wrap; }
-  .avatar-pick {
-    width: 52px; height: 52px; border-radius: 50%;
-    background: var(--surface2); border: 3px solid transparent;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px; cursor: pointer;
-    transition: border-color 0.15s, transform 0.1s;
-  }
-  .avatar-pick:hover  { transform: scale(1.1); }
-  .avatar-pick.sel    { border-color: var(--accent); background: var(--accent-lt); }
+/* avatar picker */
+.av-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+.av-opt  {
+  width: 50px; height: 50px; border-radius: 50%;
+  background: var(--surface2); border: 3px solid transparent;
+  display: flex; align-items: center; justify-content: center; font-size: 26px;
+  cursor: pointer; transition: border-color .15s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.av-opt:active { transform: scale(.94); }
+.av-opt.on { border-color: var(--accent); background: var(--accent-lt); }
 
-  /* theme picker */
-  .theme-grid { display: flex; gap: 10px; flex-wrap: wrap; }
-  .theme-swatch {
-    width: 44px; height: 44px; border-radius: 12px;
-    cursor: pointer; border: 3px solid transparent;
-    transition: border-color 0.15s, transform 0.1s;
-  }
-  .theme-swatch:hover  { transform: scale(1.1); }
-  .theme-swatch.sel    { border-color: var(--accent); }
+/* theme swatches */
+.th-grid   { display: flex; gap: 10px; flex-wrap: wrap; }
+.th-swatch {
+  width: 42px; height: 42px; border-radius: 12px;
+  cursor: pointer; border: 3px solid transparent;
+  transition: border-color .15s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.th-swatch:active { transform: scale(.93); }
+.th-swatch.on { border-color: var(--accent); }
 
-  /* mood slider */
-  .mood-row { display: flex; align-items: center; gap: 12px; }
-  .mood-row input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; height: 6px; }
-  .mood-num {
-    font-size: 22px; font-weight: 900; min-width: 32px;
-    text-align: center; color: var(--accent);
-  }
+/* mood row */
+.mood-row { display: flex; align-items: center; gap: 12px; }
+.mood-row input[type=range] { flex: 1; accent-color: var(--accent); height: 6px; cursor: pointer; }
+.mood-num { font-size: 22px; font-weight: 900; min-width: 30px; text-align: center; color: var(--accent); }
 
-  /* code display */
-  .code-box {
-    background: var(--accent-lt); border: 2px dashed var(--accent);
-    border-radius: var(--radius); padding: 22px; text-align: center; cursor: pointer;
-  }
-  .code-box .code-val {
-    font-size: 42px; font-weight: 900; letter-spacing: 10px; color: var(--accent);
-    font-family: "Courier New", monospace;
-  }
-  .code-box p { color: var(--muted); font-size: 12px; font-weight: 600; margin-top: 6px; }
+/* code box */
+.code-box {
+  background: var(--accent-lt); border: 2px dashed var(--accent);
+  border-radius: var(--r-card); padding: 24px; text-align: center; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.code-box .code-val {
+  font-size: 40px; font-weight: 900; letter-spacing: 8px; color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.code-box p { color: var(--muted); font-size: 12px; font-weight: 600; margin-top: 6px; }
 
-  /* ──────────────────────────────────────────
-     DASHBOARD
-  ────────────────────────────────────────── */
-  #screen-dashboard { flex-direction: column; min-height: 100vh; }
+/* ══════════════════════════════════════
+   DASHBOARD — APP CHROME
+══════════════════════════════════════ */
+#s-dash {
+  background: var(--bg);
+}
 
-  /* header */
-  .dash-header {
-    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
-    padding: 14px 24px;
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 100;
-  }
-  .dash-header .logo {
-    font-size: 20px; font-weight: 900; color: var(--accent);
-    letter-spacing: -0.5px;
-  }
-  .hdr-squad-pill {
-    background: var(--surface); border-radius: var(--radius-pill);
-    padding: 7px 20px; font-size: 18px; font-weight: 900;
-    color: var(--text); box-shadow: var(--shadow-sm);
-  }
-  .hdr-code-pill {
-    background: var(--accent); color: #fff;
-    border-radius: var(--radius-pill); padding: 5px 14px;
-    font-size: 13px; font-weight: 800; letter-spacing: 1px;
-    cursor: pointer; transition: opacity 0.15s;
-  }
-  .hdr-code-pill:hover { opacity: 0.85; }
-  .hdr-count {
-    font-size: 14px; font-weight: 700; color: var(--muted);
-  }
-  .hdr-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-  .me-pill {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--surface); border-radius: var(--radius-pill);
-    padding: 5px 14px 5px 6px; box-shadow: var(--shadow-sm);
-    font-size: 13px; font-weight: 700;
-  }
-  .ws-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--muted); flex-shrink: 0; transition: background 0.3s;
-  }
-  .ws-dot.connected { background: var(--green); }
-  .ws-dot.error     { background: var(--red); }
+/* ─── APP HEADER ─── */
+.app-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px 0;
+  flex-shrink: 0;
+  position: relative;
+}
+.hdr-count {
+  font-size: 14px; font-weight: 700; color: var(--muted);
+  min-width: 120px;
+}
+.hdr-squad-pill {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  background: var(--surface); border-radius: var(--r-pill);
+  padding: 10px 26px; font-size: 22px; font-weight: 900;
+  color: var(--text); box-shadow: var(--shadow);
+  white-space: nowrap;
+}
+.hdr-close {
+  font-size: 26px; color: var(--muted); background: none; border: none;
+  cursor: pointer; line-height: 1; -webkit-tap-highlight-color: transparent;
+  min-width: 40px; text-align: right;
+}
+.hdr-close:active { opacity: .6; }
 
-  /* layout */
-  .dash-body {
-    display: grid; grid-template-columns: 1fr 290px; flex: 1;
-    overflow: hidden; max-height: calc(100vh - 61px);
-  }
-  @media (max-width: 700px) {
-    .dash-body { grid-template-columns: 1fr; max-height: none; overflow: visible; }
-    .dash-sidebar { border-left: none; border-top: 2px solid var(--border); }
-  }
-  .dash-main    { overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 24px; }
-  .dash-sidebar { overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; border-left: 2px solid var(--border); }
+/* ─── WS DOT ─── */
+.ws-dot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--muted); margin-right: 5px; vertical-align: middle;
+  transition: background .3s;
+}
+.ws-dot.live  { background: var(--green); }
+.ws-dot.err   { background: var(--red); }
 
-  /* expiry banner */
-  .expires-banner {
-    background: var(--surface); border-radius: var(--radius-sm);
-    padding: 10px 18px; font-size: 13px; font-weight: 700; color: var(--muted);
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    box-shadow: var(--shadow-sm);
-  }
-  .expires-banner.warn { background: var(--yellow-lt); color: #92400e; }
+/* ─── SCROLLABLE BODY ─── */
+.dash-scroll {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 20px 20px 40px;
+  display: flex; flex-direction: column; gap: 28px;
+  -webkit-overflow-scrolling: touch;
+}
 
-  /* ── MY CARD ── */
-  .my-card {
-    background: var(--surface); border-radius: var(--radius);
-    box-shadow: var(--shadow); padding: 22px;
-    display: flex; flex-direction: column; gap: 16px;
-  }
-  .my-card-top { display: flex; align-items: center; gap: 16px; }
-  .my-info .my-name { font-size: 19px; font-weight: 900; }
-  .my-info .my-status-txt { color: var(--muted); font-size: 13px; font-weight: 600; }
-  .live-badge {
-    background: var(--green-lt); color: #15803d;
-    border-radius: var(--radius-pill); padding: 3px 12px;
-    font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
-  }
-  .my-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .ctrl-block { display: flex; flex-direction: column; gap: 6px; }
-  .ctrl-block select {
-    background: var(--surface2); border: 2px solid var(--border);
-    border-radius: var(--radius-sm); padding: 9px 12px;
-    color: var(--text); font-size: 13px; font-family: inherit;
-    font-weight: 700; outline: none; cursor: pointer;
-    transition: border-color 0.15s;
-  }
-  .ctrl-block select:focus { border-color: var(--accent); }
+/* ─── MEMBER GRID (top-level ungrouped) ─── */
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+}
 
-  /* quick status pills */
-  .quick-pills { display: flex; flex-wrap: wrap; gap: 7px; }
-  .quick-pill {
-    background: var(--surface2); border: 2px solid var(--border);
-    border-radius: var(--radius-pill); padding: 5px 14px;
-    font-size: 12px; font-weight: 700; cursor: pointer;
-    transition: background 0.12s, border-color 0.12s, transform 0.1s; color: var(--text);
-  }
-  .quick-pill:hover { border-color: var(--accent); background: var(--accent-lt); transform: scale(1.04); }
+/* ─── INDIVIDUAL MEMBER CARD ─── */
+.mc {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px; cursor: default;
+}
+.mc-name {
+  font-size: 16px; font-weight: 800; text-align: center;
+  color: var(--text); line-height: 1.2;
+}
+/* The big face bubble */
+.face-bubble {
+  border-radius: 50%; background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow); border: 3px solid rgba(255,255,255,0.9);
+  flex-shrink: 0; font-size: 52px;
+  width: 100px; height: 100px;
+  transition: transform .15s;
+}
+.face-bubble.me { border-color: var(--accent); border-width: 3px; }
 
-  /* ── MEMBER GRID ── */
-  .section-hdr {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
-  }
-  .section-title {
-    font-size: 13px; font-weight: 800; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.8px;
-  }
-  .search-bar {
-    width: 100%; background: var(--surface); border: 2px solid var(--border);
-    border-radius: var(--radius-pill); padding: 10px 18px;
-    color: var(--text); font-size: 14px; font-family: inherit;
-    font-weight: 600; outline: none; margin-bottom: 16px;
-    transition: border-color 0.15s; box-shadow: var(--shadow-sm);
-  }
-  .search-bar:focus { border-color: var(--accent); }
-  .search-bar::placeholder { color: var(--muted); }
+/* ─── STATUS PILL (dropdown overlay) ─── */
+.status-wrap { position: relative; display: inline-flex; }
+.status-pill {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--r-pill); padding: 7px 14px;
+  font-size: 13px; font-weight: 700; color: var(--text);
+  display: flex; align-items: center; gap: 5px; cursor: pointer;
+  white-space: nowrap; box-shadow: var(--shadow-sm);
+  transition: border-color .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.status-pill.lunch-pill { background: var(--pink-lt); border-color: var(--pink); color: #be185d; }
+.status-pill .chev { color: var(--muted); font-size: 11px; margin-left: 1px; }
+.status-wrap select {
+  position: absolute; inset: 0; opacity: 0;
+  cursor: pointer; width: 100%; height: 100%;
+  font-size: 16px; /* prevent iOS zoom */
+}
 
-  .member-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 16px;
-  }
-  .member-card {
-    background: var(--surface); border-radius: var(--radius);
-    box-shadow: var(--shadow-sm); padding: 20px 14px 16px;
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
-    transition: box-shadow 0.2s, transform 0.2s; cursor: default;
-    position: relative;
-  }
-  .member-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
-  .member-card .mc-name {
-    font-size: 14px; font-weight: 800; text-align: center;
-    color: var(--text);
-  }
-  .member-card .mc-status {
-    background: var(--surface2); border-radius: var(--radius-pill);
-    padding: 4px 12px; font-size: 11px; font-weight: 700; color: var(--text);
-    display: flex; align-items: center; gap: 4px; text-align: center;
-    border: 1px solid var(--border); cursor: pointer;
-    transition: border-color 0.15s;
-  }
-  .member-card .mc-status:hover { border-color: var(--accent); }
-  .member-card .mc-status .chevron { color: var(--muted); font-size: 10px; }
-  .mood-bar-wrap { width: 100%; height: 5px; background: var(--surface2); border-radius: 999px; overflow: hidden; }
-  .mood-bar-fill { height: 100%; border-radius: 999px; transition: width 0.5s; }
-  .member-card .mc-spotify {
-    font-size: 10px; font-weight: 700; color: #15803d;
-    text-align: center; white-space: nowrap; overflow: hidden;
-    text-overflow: ellipsis; max-width: 100%;
-    background: var(--green-lt); border-radius: var(--radius-pill); padding: 2px 8px;
-  }
-  .me-tag {
-    position: absolute; top: 8px; right: 8px;
-    background: var(--accent-lt); color: var(--accent);
-    border-radius: var(--radius-pill); padding: 2px 8px;
-    font-size: 9px; font-weight: 800; text-transform: uppercase;
-  }
+/* ─── GROUP BLOCK ─── */
+.group-block {
+  background: var(--surface2); border-radius: var(--r-card);
+  padding: 20px 18px 18px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.group-label {
+  font-size: 22px; font-weight: 900; text-align: center; color: var(--text);
+}
+.chow-btn-wrap {
+  display: flex; justify-content: center; padding-top: 4px;
+}
 
-  /* grouped sections */
-  .group-block {
-    background: var(--surface2); border-radius: var(--radius);
-    padding: 20px; display: flex; flex-direction: column; gap: 14px;
-  }
-  .group-title {
-    font-size: 18px; font-weight: 900; color: var(--text); text-align: center;
-  }
-  .group-action {
-    display: flex; justify-content: center;
-  }
+/* ─── BOTTOM SHEET TABS ─── */
+.bottom-tabs {
+  display: flex; background: rgba(255,255,255,.82);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
+  padding: 10px 16px calc(var(--sab) + 10px);
+  gap: 4px; flex-shrink: 0;
+}
+.tab-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 3px; padding: 6px 4px; border-radius: 12px;
+  background: none; border: none; cursor: pointer; font-family: inherit;
+  -webkit-tap-highlight-color: transparent; transition: background .15s;
+}
+.tab-btn:active { background: var(--surface2); }
+.tab-btn.active { background: var(--accent-lt); }
+.tab-btn .ti { font-size: 22px; }
+.tab-btn .tl { font-size: 10px; font-weight: 800; color: var(--muted); }
+.tab-btn.active .tl { color: var(--accent); }
 
-  /* ── SPOTIFY CARD ── */
-  .spotify-wrap {
-    background: var(--surface); border-radius: var(--radius);
-    box-shadow: var(--shadow); padding: 18px;
-    display: flex; flex-direction: column; gap: 12px;
-  }
-  .spotify-inner {
-    display: flex; align-items: center; gap: 14px;
-  }
-  .spotify-art {
-    width: 58px; height: 58px; border-radius: var(--radius-sm);
-    background: var(--surface2); display: flex; align-items: center;
-    justify-content: center; font-size: 30px; flex-shrink: 0;
-    overflow: hidden; box-shadow: var(--shadow-sm);
-  }
-  .spotify-art img { width: 100%; height: 100%; object-fit: cover; }
-  .spotify-info { flex: 1; min-width: 0; }
-  .spotify-track {
-    font-size: 15px; font-weight: 800; white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis; color: var(--text);
-  }
-  .spotify-artist { font-size: 12px; font-weight: 700; color: #15803d; }
-  .spotify-none   { font-size: 13px; font-weight: 600; color: var(--muted); }
-  .spotify-progress {
-    height: 4px; background: var(--surface2); border-radius: 999px; overflow: hidden;
-  }
-  .spotify-progress-fill {
-    height: 100%; background: #1db954; border-radius: 999px; transition: width 1s linear;
-  }
-  .now-dot {
-    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
-    background: #1db954; margin-right: 5px; animation: pulse 1.4s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.75)} }
+/* ─── PANE PANELS ─── */
+.pane { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+.pane.active { display: flex; }
 
-  /* ── SIDEBAR ── */
-  /* poll */
-  .poll-card {
-    background: var(--surface); border-radius: var(--radius);
-    box-shadow: var(--shadow-sm); padding: 18px;
-    display: flex; flex-direction: column; gap: 10px;
-  }
-  .poll-card-hdr { display: flex; align-items: center; justify-content: space-between; }
-  .poll-ttl  { font-size: 14px; font-weight: 900; }
-  .poll-sub  { font-size: 10px; color: var(--muted); font-weight: 700; }
-  .poll-q    { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.5; }
-  .poll-opts { display: flex; flex-direction: column; gap: 7px; }
-  .poll-opt {
-    background: var(--surface2); border: 2px solid var(--border);
-    border-radius: var(--radius-pill); padding: 9px 14px;
-    font-size: 13px; font-weight: 700; cursor: pointer;
-    position: relative; overflow: hidden; display: flex;
-    align-items: center; justify-content: space-between;
-    transition: border-color 0.15s;
-  }
-  .poll-opt:hover { border-color: var(--accent); }
-  .poll-opt.my-vote { border-color: var(--accent); background: var(--accent-lt); }
-  .poll-opt-bar {
-    position: absolute; left: 0; top: 0; bottom: 0;
-    border-radius: var(--radius-pill);
-    background: var(--accent-lt); transition: width 0.4s; z-index: 0;
-  }
-  .poll-opt span, .poll-pct { position: relative; z-index: 1; }
-  .poll-pct { font-size: 12px; font-weight: 800; color: var(--accent); }
-  .poll-voted-note { font-size: 11px; font-weight: 700; color: var(--accent); }
+/* ── My Status Panel (tab 2) ── */
+.my-panel {
+  padding: 20px; gap: 18px; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.my-avatar-big {
+  font-size: 80px; width: 120px; height: 120px;
+  border-radius: 50%; background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow); border: 3px solid var(--accent);
+  margin: 0 auto;
+}
+.live-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--green-lt); color: #15803d;
+  border-radius: var(--r-pill); padding: 4px 14px;
+  font-size: 12px; font-weight: 800; text-transform: uppercase;
+}
+.my-name-big { font-size: 26px; font-weight: 900; text-align: center; }
+.my-status-txt { color: var(--muted); font-size: 14px; font-weight: 600; text-align: center; }
+.quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.qpill {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: var(--r-pill); padding: 10px 12px;
+  font-size: 13px; font-weight: 700; cursor: pointer; text-align: center;
+  -webkit-tap-highlight-color: transparent; transition: border-color .15s, background .15s;
+}
+.qpill:active { background: var(--accent-lt); border-color: var(--accent); transform: scale(.97); }
+.ctrl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ctrl-sel {
+  width: 100%; background: var(--surface2); border: 2px solid var(--border);
+  border-radius: var(--r-sm); padding: 10px 12px; color: var(--text);
+  font-size: 14px; font-family: inherit; font-weight: 700; outline: none;
+  -webkit-appearance: none; cursor: pointer;
+}
+.ctrl-sel:focus { border-color: var(--accent); }
 
-  /* sidebar member list */
-  .sb-member-list { display: flex; flex-direction: column; gap: 10px; }
-  .sb-member {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--surface); border-radius: var(--radius-sm);
-    padding: 8px 12px; box-shadow: var(--shadow-sm);
-  }
-  .sb-member .sb-info { flex: 1; min-width: 0; }
-  .sb-member .sb-name { font-size: 13px; font-weight: 800; }
-  .sb-member .sb-status { font-size: 11px; font-weight: 600; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sb-mood-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+/* ── Spotify Panel (tab 3) ── */
+.spotify-panel {
+  padding: 20px; gap: 16px; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.spotify-big-art {
+  width: 180px; height: 180px; border-radius: 20px;
+  background: var(--surface2); display: flex; align-items: center;
+  justify-content: center; font-size: 80px; margin: 0 auto;
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.spotify-big-art img { width: 100%; height: 100%; object-fit: cover; }
+.sp-track  { font-size: 20px; font-weight: 900; text-align: center; line-height: 1.3; }
+.sp-artist { font-size: 14px; font-weight: 700; color: #15803d; text-align: center; }
+.sp-prog-wrap { height: 5px; background: var(--surface2); border-radius: 999px; overflow: hidden; }
+.sp-prog-fill { height: 100%; background: #1db954; border-radius: 999px; transition: width 1s linear; }
+.sp-none { color: var(--muted); font-weight: 600; text-align: center; font-size: 14px; line-height: 1.6; padding: 20px 0; }
+.now-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #1db954; margin-right: 6px; animation: pulse 1.4s infinite; vertical-align: middle; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
 
-  /* scrollbar */
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* ── Poll Panel (tab 4) ── */
+.poll-panel {
+  padding: 20px; gap: 14px; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.poll-q { font-size: 18px; font-weight: 800; line-height: 1.4; }
+.poll-opt {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: var(--r-pill); padding: 14px 18px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: border-color .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.poll-opt:active { transform: scale(.98); }
+.poll-opt.voted  { border-color: var(--accent); background: var(--accent-lt); cursor: default; }
+.poll-bar { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent-lt); transition: width .4s; z-index: 0; border-radius: var(--r-pill); }
+.poll-opt > * { position: relative; z-index: 1; }
+.poll-pct { font-size: 13px; font-weight: 900; color: var(--accent); }
+.poll-note { font-size: 12px; font-weight: 700; color: var(--accent); text-align: center; }
 
-  /* flash animation */
-  .flash { animation: flash 0.4s; }
-  @keyframes flash { 0%,100%{opacity:1} 50%{opacity:0.3} }
+/* ── Expires banner ── */
+.exp-banner {
+  background: var(--surface); border-radius: var(--r-sm);
+  padding: 10px 16px; font-size: 13px; font-weight: 700; color: var(--muted);
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  box-shadow: var(--shadow-sm); flex-shrink: 0; margin: 0 20px;
+}
+.exp-banner.warn { background: #fef9c3; color: #92400e; }
 
-  /* inline select dropdown for member card */
-  .status-dropdown-wrap { position: relative; display: inline-flex; }
-  .status-dropdown-wrap select {
-    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%;
-  }
+/* ── Section title ── */
+.sec-title {
+  font-size: 12px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .7px;
+}
+
+/* ── Install banner ── */
+#install-banner {
+  display: none; position: fixed; bottom: calc(var(--sab) + 80px); left: 16px; right: 16px;
+  background: var(--surface); border-radius: var(--r-card); box-shadow: var(--shadow);
+  padding: 14px 18px; gap: 12px; align-items: center; z-index: 99;
+}
+#install-banner.show { display: flex; }
+#install-banner p { flex: 1; font-size: 13px; font-weight: 700; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 0; }
 </style>
 </head>
 <body>
+<div id="app">
 
-<!-- ══════════════════════════════════════════
+<!-- ══════════════════════════════════════
      LANDING
-══════════════════════════════════════════ -->
-<div id="screen-landing" class="screen active">
-  <div class="landing-hero">
-    <h1>BOB, <span>WYD?</span></h1>
-    <p>Your squad's real-time vibes, moods &amp; music.</p>
+══════════════════════════════════════ -->
+<div id="s-landing" class="screen active">
+  <div class="land-title">
+    <h1>BOB,<br><span>WYD?</span></h1>
+    <p>See what your squad is up to.</p>
   </div>
-  <div class="landing-avatars">
-    <div class="avatar-face">🐱</div>
-    <div class="avatar-face">🦊</div>
-    <div class="avatar-face">🐼</div>
-    <div class="avatar-face">🦁</div>
-    <div class="avatar-face">🐶</div>
+  <div class="land-faces">
+    <div class="face-bubble" style="width:72px;height:72px;font-size:40px">🐱</div>
+    <div class="face-bubble" style="width:72px;height:72px;font-size:40px">🦊</div>
+    <div class="face-bubble" style="width:72px;height:72px;font-size:40px">🐼</div>
+    <div class="face-bubble" style="width:72px;height:72px;font-size:40px">🦁</div>
+    <div class="face-bubble" style="width:72px;height:72px;font-size:40px">🐶</div>
   </div>
-  <div class="landing-btns">
-    <button class="btn btn-primary" onclick="showScreen('create-step1')">+ Create Squad</button>
-    <button class="btn btn-soft"    onclick="showScreen('join')">Join Squad</button>
+  <div class="land-btns">
+    <button class="btn btn-primary" style="width:100%" onclick="go('create-1')">+ Create Squad</button>
+    <button class="btn btn-soft"    style="width:100%" onclick="go('join')">Join Squad</button>
   </div>
-  <div class="landing-features">
-    <span class="feat-chip">Real-time presence</span>
-    <span class="feat-chip">Spotify Now Playing</span>
-    <span class="feat-chip">Daily Poll</span>
-    <span class="feat-chip">Mood tracker</span>
-    <span class="feat-chip">6-digit codes</span>
-    <span class="feat-chip">24 h squads</span>
+  <div class="land-chips">
+    <span class="chip">Real-time presence</span>
+    <span class="chip">Spotify</span>
+    <span class="chip">Daily Poll</span>
+    <span class="chip">Mood tracker</span>
+    <span class="chip">6-digit codes</span>
   </div>
-  <p style="color:var(--muted);font-size:11px;font-weight:700">
-    Backend: <span id="api-url-display" style="color:var(--accent)"></span>
-  </p>
 </div>
 
-<!-- ══════════════════════════════════════════
-     CREATE — STEP 1
-══════════════════════════════════════════ -->
-<div id="screen-create-step1" class="screen form-screen">
-  <div class="form-card">
-    <div class="step-dots">
-      <div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div>
-    </div>
+<!-- ══════════════════════════════════════
+     CREATE — 1
+══════════════════════════════════════ -->
+<div id="s-create-1" class="screen form-screen">
+  <div class="fcard">
+    <div class="step-dots"><div class="step-dot on"></div><div class="step-dot"></div><div class="step-dot"></div></div>
     <h2>Create Your Squad 🎉</h2>
-    <div class="form-group">
-      <label class="form-label">Squad Name</label>
-      <input id="inp-squad-name" class="form-input" type="text" placeholder="e.g. Design Team, Lunch Squad…" maxlength="30" />
-      <div id="err-squad-name" class="form-error" style="display:none">Please enter a squad name (3–30 chars)</div>
+    <div class="fgrp">
+      <label class="lbl">Squad Name</label>
+      <input id="inp-sname" class="inp" type="text" placeholder="e.g. Design Team…" maxlength="30" />
+      <div id="err-sname" class="ferr" style="display:none">3–30 characters please</div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Choose a Theme</label>
-      <div class="theme-grid" id="theme-picker">
-        <div class="theme-swatch sel"  data-theme="sky"    style="background:linear-gradient(135deg,#c9dff5,#a5c8f0)" title="Sky"></div>
-        <div class="theme-swatch"      data-theme="lavender" style="background:linear-gradient(135deg,#c4b5fd,#a78bfa)" title="Lavender"></div>
-        <div class="theme-swatch"      data-theme="mint"   style="background:linear-gradient(135deg,#a7f3d0,#6ee7b7)" title="Mint"></div>
-        <div class="theme-swatch"      data-theme="peach"  style="background:linear-gradient(135deg,#fed7aa,#fca5a5)" title="Peach"></div>
-        <div class="theme-swatch"      data-theme="lemon"  style="background:linear-gradient(135deg,#fef08a,#fcd34d)" title="Lemon"></div>
+    <div class="fgrp">
+      <label class="lbl">Theme</label>
+      <div class="th-grid" id="theme-picker">
+        <div class="th-swatch on"  data-theme="sky"      style="background:linear-gradient(135deg,#c9dff5,#a5c8f0)" title="Sky"></div>
+        <div class="th-swatch"     data-theme="lavender" style="background:linear-gradient(135deg,#c4b5fd,#a78bfa)" title="Lavender"></div>
+        <div class="th-swatch"     data-theme="mint"     style="background:linear-gradient(135deg,#a7f3d0,#6ee7b7)" title="Mint"></div>
+        <div class="th-swatch"     data-theme="peach"    style="background:linear-gradient(135deg,#fed7aa,#fca5a5)" title="Peach"></div>
+        <div class="th-swatch"     data-theme="lemon"    style="background:linear-gradient(135deg,#fef08a,#fcd34d)" title="Lemon"></div>
       </div>
     </div>
     <div style="display:flex;gap:10px">
-      <button class="btn btn-ghost" style="flex:1" onclick="showScreen('landing')">Back</button>
-      <button class="btn btn-primary" style="flex:2" onclick="createStep1Next()">Next →</button>
+      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="go('landing')">Back</button>
+      <button class="btn btn-primary" style="flex:2" onclick="c1next()">Next →</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     CREATE — STEP 2
-══════════════════════════════════════════ -->
-<div id="screen-create-step2" class="screen form-screen">
-  <div class="form-card">
-    <div class="step-dots">
-      <div class="step-dot"></div><div class="step-dot active"></div><div class="step-dot"></div>
-    </div>
+<!-- ══════════════════════════════════════
+     CREATE — 2
+══════════════════════════════════════ -->
+<div id="s-create-2" class="screen form-screen">
+  <div class="fcard">
+    <div class="step-dots"><div class="step-dot"></div><div class="step-dot on"></div><div class="step-dot"></div></div>
     <h2>Your Profile 😊</h2>
-    <div class="form-group">
-      <label class="form-label">Display Name</label>
-      <input id="inp-creator-name" class="form-input" type="text" placeholder="e.g. Alice, Bob…" maxlength="20" />
-      <div id="err-creator-name" class="form-error" style="display:none">Please enter a name (2–20 chars)</div>
+    <div class="fgrp">
+      <label class="lbl">Your Name</label>
+      <input id="inp-cname" class="inp" type="text" placeholder="e.g. Alice…" maxlength="20" />
+      <div id="err-cname" class="ferr" style="display:none">2–20 characters please</div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Pick Your Avatar</label>
-      <div class="avatar-grid" id="avatar-picker-create"></div>
+    <div class="fgrp">
+      <label class="lbl">Avatar</label>
+      <div class="av-grid" id="av-create"></div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Starting Mood (1–10)</label>
+    <div class="fgrp">
+      <label class="lbl">Starting Mood</label>
       <div class="mood-row">
-        <input type="range" id="create-mood" min="1" max="10" value="7"
-               oninput="document.getElementById('create-mood-val').textContent=this.value" />
-        <span class="mood-num" id="create-mood-val">7</span>
+        <input type="range" id="cmood" min="1" max="10" value="7" oninput="byId('cmoodv').textContent=this.value" />
+        <span class="mood-num" id="cmoodv">7</span>
       </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Starting Status</label>
-      <select id="inp-creator-status" class="form-input">
+    <div class="fgrp">
+      <label class="lbl">Status</label>
+      <select id="inp-cstatus" class="inp" style="-webkit-appearance:none">
         <option>Just arrived</option><option>Sipping coffee</option>
         <option>In focus mode</option><option>Ready to collaborate</option>
         <option>Heads-down coding</option><option>Available</option>
@@ -612,64 +554,61 @@
       </select>
     </div>
     <div style="display:flex;gap:10px">
-      <button class="btn btn-ghost" style="flex:1" onclick="showScreen('create-step1')">Back</button>
-      <button class="btn btn-primary" style="flex:2" id="btn-create-submit" onclick="submitCreateSquad()">Create Squad →</button>
+      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="go('create-1')">Back</button>
+      <button class="btn btn-primary" style="flex:2" id="btn-create" onclick="doCreate()">Create Squad →</button>
     </div>
-    <div id="err-create-api" class="form-error" style="display:none"></div>
+    <div id="err-create" class="ferr" style="display:none"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     CREATE — STEP 3 (code reveal)
-══════════════════════════════════════════ -->
-<div id="screen-create-step3" class="screen form-screen">
-  <div class="form-card">
-    <div class="step-dots">
-      <div class="step-dot"></div><div class="step-dot"></div><div class="step-dot active"></div>
+<!-- ══════════════════════════════════════
+     CREATE — 3 (code)
+══════════════════════════════════════ -->
+<div id="s-create-3" class="screen form-screen">
+  <div class="fcard">
+    <div class="step-dots"><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot on"></div></div>
+    <h2>Squad Ready! 🚀</h2>
+    <p style="color:var(--muted);font-size:14px;font-weight:600">Share this code with your squad.</p>
+    <div class="code-box" onclick="copyCode()">
+      <div class="code-val" id="code-val">------</div>
+      <p>Tap to copy · Expires in 24h</p>
     </div>
-    <h2>Squad is Ready! 🚀</h2>
-    <p style="color:var(--muted);font-size:14px;font-weight:600">Share this code with your coworkers.</p>
-    <div class="code-box" onclick="copyCode()" title="Click to copy">
-      <div class="code-val" id="code-display-val">------</div>
-      <p>Click to copy · Expires in 24 hours</p>
-    </div>
-    <button class="btn btn-primary" onclick="enterDashboard()">Enter Squad →</button>
+    <button class="btn btn-primary" style="width:100%" onclick="launchDash()">Enter Squad →</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
+<!-- ══════════════════════════════════════
      JOIN
-══════════════════════════════════════════ -->
-<div id="screen-join" class="screen form-screen">
-  <div class="form-card">
+══════════════════════════════════════ -->
+<div id="s-join" class="screen form-screen">
+  <div class="fcard">
     <h2>Join a Squad 👋</h2>
-    <div class="form-group">
-      <label class="form-label">Enter Join Code</label>
-      <input id="inp-join-code" class="form-input" type="text" placeholder="B7X4Q2" maxlength="6"
-             style="text-transform:uppercase;letter-spacing:6px;font-size:22px;font-weight:900;text-align:center"
+    <div class="fgrp">
+      <label class="lbl">Join Code</label>
+      <input id="inp-jcode" class="inp" type="text" placeholder="B7X4Q2" maxlength="6"
+             style="text-transform:uppercase;letter-spacing:6px;font-size:24px;font-weight:900;text-align:center"
              oninput="this.value=this.value.toUpperCase()" />
-      <div id="err-join-code" class="form-error" style="display:none"></div>
+      <div id="err-jcode" class="ferr" style="display:none"></div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Display Name</label>
-      <input id="inp-join-name" class="form-input" type="text" placeholder="e.g. Charlie, Dana…" maxlength="20" />
-      <div id="err-join-name" class="form-error" style="display:none">Please enter a name (2–20 chars)</div>
+    <div class="fgrp">
+      <label class="lbl">Your Name</label>
+      <input id="inp-jname" class="inp" type="text" placeholder="e.g. Charlie…" maxlength="20" />
+      <div id="err-jname" class="ferr" style="display:none">2–20 characters please</div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Pick Your Avatar</label>
-      <div class="avatar-grid" id="avatar-picker-join"></div>
+    <div class="fgrp">
+      <label class="lbl">Avatar</label>
+      <div class="av-grid" id="av-join"></div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Starting Mood (1–10)</label>
+    <div class="fgrp">
+      <label class="lbl">Starting Mood</label>
       <div class="mood-row">
-        <input type="range" id="join-mood" min="1" max="10" value="7"
-               oninput="document.getElementById('join-mood-val').textContent=this.value" />
-        <span class="mood-num" id="join-mood-val">7</span>
+        <input type="range" id="jmood" min="1" max="10" value="7" oninput="byId('jmoodv').textContent=this.value" />
+        <span class="mood-num" id="jmoodv">7</span>
       </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Status</label>
-      <select id="inp-join-status" class="form-input">
+    <div class="fgrp">
+      <label class="lbl">Status</label>
+      <select id="inp-jstatus" class="inp" style="-webkit-appearance:none">
         <option>Just arrived</option><option>Sipping coffee</option>
         <option>In focus mode</option><option>Ready to collaborate</option>
         <option>Heads-down coding</option><option>Available</option>
@@ -677,817 +616,741 @@
       </select>
     </div>
     <div style="display:flex;gap:10px">
-      <button class="btn btn-ghost" style="flex:1" onclick="showScreen('landing')">Back</button>
-      <button class="btn btn-primary" style="flex:2" id="btn-join-submit" onclick="submitJoinSquad()">Join Squad →</button>
+      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="go('landing')">Back</button>
+      <button class="btn btn-primary" style="flex:2" id="btn-join" onclick="doJoin()">Join Squad →</button>
     </div>
-    <div id="err-join-api" class="form-error" style="display:none"></div>
+    <div id="err-join" class="ferr" style="display:none"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
+<!-- ══════════════════════════════════════
      DASHBOARD
-══════════════════════════════════════════ -->
-<div id="screen-dashboard" class="screen">
+══════════════════════════════════════ -->
+<div id="s-dash" class="screen">
 
   <!-- Header -->
-  <div class="dash-header">
-    <div class="logo">BOB, WYD?</div>
-    <div class="hdr-squad-pill" id="hdr-squad-name">Squad</div>
-    <div class="hdr-code-pill"  id="hdr-squad-code" onclick="copyCode()" title="Click to copy">------</div>
-    <span class="hdr-count" id="hdr-count"></span>
-    <div class="ws-dot" id="ws-indicator" title="Connecting…"></div>
-    <div class="hdr-right">
-      <div class="me-pill">
-        <span id="hdr-me-avatar" style="font-size:22px">?</span>
-        <span id="hdr-me-name" style="font-weight:800">You</span>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="leaveSquad()">Leave ✕</button>
+  <div class="app-header">
+    <div class="hdr-count">
+      <span class="ws-dot" id="ws-dot"></span>
+      <span id="hdr-count">0 here</span>
+    </div>
+    <div class="hdr-squad-pill" id="hdr-squad">Squad</div>
+    <button class="hdr-close" onclick="leaveSquad()">✕</button>
+  </div>
+
+  <!-- Expiry banner -->
+  <div class="exp-banner" id="exp-banner" style="margin-top:12px">
+    <span id="exp-txt"></span>
+    <button class="btn btn-sm btn-ghost" id="btn-extend" style="display:none" onclick="extendSquad()">+24h</button>
+  </div>
+
+  <!-- TAB PANES -->
+
+  <!-- Squad tab -->
+  <div id="pane-squad" class="pane active">
+    <div class="dash-scroll" id="squad-scroll">
+      <!-- rendered by JS -->
     </div>
   </div>
 
-  <div class="dash-body">
-    <!-- ── MAIN ── -->
-    <div class="dash-main">
-
-      <!-- Expiry banner -->
-      <div class="expires-banner" id="expires-banner">
-        <span id="expires-text"></span>
-        <button class="btn btn-sm btn-ghost" id="btn-extend" style="display:none" onclick="extendSquad()">Extend 24h</button>
+  <!-- Me tab -->
+  <div id="pane-me" class="pane">
+    <div class="dash-scroll my-panel">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+        <div class="my-avatar-big" id="me-av-big">?</div>
+        <div class="my-name-big"   id="me-name-big">You</div>
+        <div class="my-status-txt" id="me-status-txt">Available</div>
+        <span class="live-badge">● LIVE</span>
       </div>
-
-      <!-- My Card -->
-      <div class="my-card">
-        <div class="my-card-top">
-          <div class="avatar-face me" id="my-avatar-display">?</div>
-          <div class="my-info" style="flex:1">
-            <div class="my-name" id="my-name-display">You</div>
-            <div class="my-status-txt" id="my-status-display">Available</div>
-          </div>
-          <span class="live-badge">● LIVE</span>
+      <div>
+        <div class="lbl" style="margin-bottom:10px">Quick Status</div>
+        <div class="quick-grid">
+          <div class="qpill" onclick="qStatus('Sipping coffee')">☕ Coffee</div>
+          <div class="qpill" onclick="qStatus('Ready for lunch')">🍕 Lunch</div>
+          <div class="qpill" onclick="qStatus('Deep work — do not disturb')">🎯 Deep work</div>
+          <div class="qpill" onclick="qStatus('In a meeting')">📅 Meeting</div>
+          <div class="qpill" onclick="qStatus('Taking a break')">🌿 Break</div>
+          <div class="qpill" onclick="qStatus('Just arrived')">👋 Hi!</div>
         </div>
-        <div class="my-controls">
-          <div class="ctrl-block">
-            <label class="form-label">Status</label>
-            <select id="my-status-sel" onchange="updateMyStatus()">
-              <option>Just arrived</option>
-              <option>Sipping coffee</option>
-              <option>In focus mode</option>
-              <option>Ready to collaborate</option>
-              <option>Heads-down coding</option>
-              <option>Available</option>
-              <option>In a meeting</option>
-              <option>Ready for lunch</option>
-              <option>Deep work — do not disturb</option>
-              <option>Taking a break</option>
-            </select>
-          </div>
-          <div class="ctrl-block">
-            <label class="form-label">Mood</label>
-            <div class="mood-row">
-              <input type="range" id="my-mood-slider" min="1" max="10" value="7"
-                     oninput="previewMood(this.value)" onchange="updateMyMood(this.value)" />
-              <span class="mood-num" id="my-mood-val">7</span>
-            </div>
-          </div>
+      </div>
+      <div class="ctrl-row">
+        <div>
+          <label class="lbl">Status</label>
+          <select id="me-status-sel" class="ctrl-sel" onchange="updateStatus()">
+            <option>Just arrived</option><option>Sipping coffee</option>
+            <option>In focus mode</option><option>Ready to collaborate</option>
+            <option>Heads-down coding</option><option>Available</option>
+            <option>In a meeting</option><option>Ready for lunch</option>
+            <option>Deep work — do not disturb</option><option>Taking a break</option>
+          </select>
         </div>
         <div>
-          <label class="form-label">Quick Status</label>
-          <div class="quick-pills">
-            <span class="quick-pill" onclick="quickStatus('Sipping coffee')">☕ Coffee</span>
-            <span class="quick-pill" onclick="quickStatus('Ready for lunch')">🍕 Lunch</span>
-            <span class="quick-pill" onclick="quickStatus('Deep work — do not disturb')">🎯 Deep work</span>
-            <span class="quick-pill" onclick="quickStatus('In a meeting')">📅 Meeting</span>
-            <span class="quick-pill" onclick="quickStatus('Taking a break')">🌿 Break</span>
-            <span class="quick-pill" onclick="quickStatus('Just arrived')">👋 Just arrived</span>
+          <label class="lbl">Mood</label>
+          <div class="mood-row">
+            <input type="range" id="me-mood" min="1" max="10" value="7"
+                   oninput="byId('me-moodv').textContent=this.value" onchange="updateMood(this.value)" />
+            <span class="mood-num" id="me-moodv">7</span>
           </div>
         </div>
       </div>
-
-      <!-- Spotify -->
-      <div class="spotify-wrap">
-        <div class="section-hdr">
-          <div class="section-title">🎵 Now Playing</div>
-          <button class="btn btn-sm btn-soft" onclick="toggleSpotify()">
-            <span id="spotify-btn-label">Connect Spotify</span>
-          </button>
-        </div>
-        <div class="spotify-inner">
-          <div class="spotify-art" id="spotify-art">🎵</div>
-          <div class="spotify-info" id="spotify-status-line">
-            <span class="spotify-none">Not connected — connect Spotify to share what you're listening to</span>
-          </div>
-        </div>
-        <div class="spotify-progress" id="spotify-progress" style="display:none">
-          <div class="spotify-progress-fill" id="spotify-progress-fill" style="width:0%"></div>
-        </div>
-      </div>
-
-      <!-- Squad Members -->
-      <div>
-        <div class="section-hdr">
-          <div class="section-title">Squad Members</div>
-          <span class="pill pill-green" id="member-count-badge">1 online</span>
-        </div>
-        <input type="text" class="search-bar" id="coworker-search"
-               placeholder="🔍  Search by name or status…" oninput="renderCoworkers()" />
-        <!-- members rendered here by renderCoworkers() -->
-        <div id="coworker-grid"></div>
-      </div>
-
-    </div>
-
-    <!-- ── SIDEBAR ── -->
-    <div class="dash-sidebar">
-
-      <!-- Poll -->
-      <div class="poll-card">
-        <div class="poll-card-hdr">
-          <div class="poll-ttl">📊 Daily Poll</div>
-          <span class="poll-sub">resets midnight</span>
-        </div>
-        <div class="poll-q" id="poll-question"></div>
-        <div class="poll-opts" id="poll-opts"></div>
-        <div id="poll-voted-note" class="poll-voted-note" style="display:none">✅ You voted! Results update live.</div>
-      </div>
-
-      <!-- Online Now -->
-      <div>
-        <div class="section-title" style="margin-bottom:10px">Online Now</div>
-        <div class="sb-member-list" id="sidebar-member-list"></div>
-      </div>
-
     </div>
   </div>
+
+  <!-- Spotify tab -->
+  <div id="pane-spotify" class="pane">
+    <div class="dash-scroll spotify-panel">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="sec-title">Now Playing</div>
+        <button class="btn btn-sm btn-soft" onclick="toggleSpotify()"><span id="sp-btn">Connect Spotify</span></button>
+      </div>
+      <div class="spotify-big-art" id="sp-art">🎵</div>
+      <div id="sp-info">
+        <p class="sp-none">Connect Spotify to share what you're listening to with your squad.</p>
+      </div>
+      <div class="sp-prog-wrap" id="sp-prog" style="display:none">
+        <div class="sp-prog-fill" id="sp-prog-fill" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Poll tab -->
+  <div id="pane-poll" class="pane">
+    <div class="dash-scroll poll-panel">
+      <div class="sec-title">Daily Poll</div>
+      <div class="poll-q" id="poll-q"></div>
+      <div id="poll-opts"></div>
+      <div id="poll-note" class="poll-note" style="display:none">✅ You voted! Results update live.</div>
+    </div>
+  </div>
+
+  <!-- Bottom Tab Bar -->
+  <div class="bottom-tabs">
+    <button class="tab-btn active" id="tab-squad" onclick="switchTab('squad')">
+      <span class="ti">👥</span><span class="tl">Squad</span>
+    </button>
+    <button class="tab-btn" id="tab-me" onclick="switchTab('me')">
+      <span class="ti">😊</span><span class="tl">Me</span>
+    </button>
+    <button class="tab-btn" id="tab-spotify" onclick="switchTab('spotify')">
+      <span class="ti">🎵</span><span class="tl">Music</span>
+    </button>
+    <button class="tab-btn" id="tab-poll" onclick="switchTab('poll')">
+      <span class="ti">📊</span><span class="tl">Poll</span>
+    </button>
+  </div>
+
+</div><!-- /s-dash -->
+
+<!-- Install PWA banner -->
+<div id="install-banner">
+  <p>📲 Add BOB, WYD? to your home screen!</p>
+  <button class="btn btn-primary btn-sm" onclick="installPWA()">Install</button>
+  <button class="btn-icon" onclick="byId('install-banner').classList.remove('show')">✕</button>
 </div>
 
-<div class="toast" id="toast"></div>
+</div><!-- /app -->
+<div id="toast"></div>
 
 <script>
 // ═══════════════════════════════════════════════════════════
 //  CONFIG
 // ═══════════════════════════════════════════════════════════
-const API_BASE = 'http://localhost:3001';
-const WS_BASE  = 'ws://localhost:3001';
-document.getElementById('api-url-display').textContent = API_BASE;
+const API = 'http://localhost:3001';
+const WSU = 'ws://localhost:3001';
 
 // ═══════════════════════════════════════════════════════════
 //  CONSTANTS
 // ═══════════════════════════════════════════════════════════
 const AVATARS = ['🐱','🐶','🦊','🐸','🐼','🐨','🦁','🐯','🐮','🐷','🦄','🐙','🦋','🐬','🦅','🦉','🐲','🌸'];
-
 const STATUS_EMOJI = {
-  'Just arrived':                '👋',
-  'Sipping coffee':              '☕',
-  'In focus mode':               '🎯',
-  'Ready to collaborate':        '🤝',
-  'Heads-down coding':           '💻',
-  'Available':                   '🟢',
-  'In a meeting':                '📅',
-  'Ready for lunch':             '🍕',
-  'Deep work — do not disturb':  '🎯',
-  'Taking a break':              '🌿',
+  'Just arrived':               '👋',
+  'Sipping coffee':             '☕',
+  'In focus mode':              '🎯',
+  'Ready to collaborate':       '🤝',
+  'Heads-down coding':          '💻',
+  'Available':                  '🟢',
+  'In a meeting':               '✏️',
+  'Ready for lunch':            '😋',
+  'Ready to munch':             '😋',
+  'Deep work — do not disturb': '🎯',
+  'Taking a break':             '🌿',
 };
+const LUNCH_STATUSES = ['ready for lunch','ready to munch','lunch','eating'];
 
 // ═══════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════
-let state = {
-  squadCode: '', squadName: '', squadTheme: 'sky', expiresAt: null,
-  memberId: '', me: null, members: [],
-  poll: null, pollVotes: [], myVote: -1,
-  selectedAvatarCreate: AVATARS[0],
-  selectedAvatarJoin:   AVATARS[0],
-  selectedTheme: 'sky',
-  pendingSquadName: '', pendingTheme: 'sky',
+let S = {
+  code:'', name:'', theme:'sky', expiresAt:null,
+  memberId:'', me:null, members:[],
+  poll:null, pollVotes:[], myVote:-1,
+  avCreate: AVATARS[0], avJoin: AVATARS[0],
+  selTheme: 'sky',
+  pendingName:'', pendingTheme:'sky',
 };
-
-let ws = null;
-let spotifyConnected = false;
-let spotifyPollTimer = null;
-let expiryInterval   = null;
+let socket=null, spotifyOn=false, spTimer=null, expTimer=null;
 
 // ═══════════════════════════════════════════════════════════
-//  SCREEN
+//  DOM HELPERS
 // ═══════════════════════════════════════════════════════════
-function showScreen(name) {
+const byId = id => document.getElementById(id);
+
+function go(screen) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const el = document.getElementById('screen-' + name);
-  if (el) el.classList.add('active');
+  byId('s-' + screen).classList.add('active');
 }
 
 // ═══════════════════════════════════════════════════════════
 //  PICKERS
 // ═══════════════════════════════════════════════════════════
-function buildAvatarPicker(containerId, stateKey) {
-  const el = document.getElementById(containerId);
+function buildAv(containerId, stateKey) {
+  const el = byId(containerId);
   el.innerHTML = '';
-  state[stateKey] = AVATARS[0];
+  S[stateKey] = AVATARS[0];
   AVATARS.forEach((a, i) => {
     const d = document.createElement('div');
-    d.className = 'avatar-pick' + (i === 0 ? ' sel' : '');
+    d.className = 'av-opt' + (i === 0 ? ' on' : '');
     d.textContent = a;
     d.onclick = () => {
-      el.querySelectorAll('.avatar-pick').forEach(x => x.classList.remove('sel'));
-      d.classList.add('sel');
-      state[stateKey] = a;
+      el.querySelectorAll('.av-opt').forEach(x => x.classList.remove('on'));
+      d.classList.add('on');
+      S[stateKey] = a;
     };
     el.appendChild(d);
   });
 }
 
-document.querySelectorAll('#theme-picker .theme-swatch').forEach(el => {
+document.querySelectorAll('#theme-picker .th-swatch').forEach(el => {
   el.onclick = () => {
-    document.querySelectorAll('#theme-picker .theme-swatch').forEach(x => x.classList.remove('sel'));
-    el.classList.add('sel');
-    state.selectedTheme = el.dataset.theme;
+    document.querySelectorAll('#theme-picker .th-swatch').forEach(x => x.classList.remove('on'));
+    el.classList.add('on');
+    S.selTheme = el.dataset.theme;
   };
 });
 
 // ═══════════════════════════════════════════════════════════
 //  CREATE FLOW
 // ═══════════════════════════════════════════════════════════
-function createStep1Next() {
-  const name = document.getElementById('inp-squad-name').value.trim();
-  const err  = document.getElementById('err-squad-name');
-  if (name.length < 3 || name.length > 30) { err.style.display = 'block'; return; }
-  err.style.display = 'none';
-  state.pendingSquadName = name;
-  state.pendingTheme = document.querySelector('#theme-picker .theme-swatch.sel')?.dataset.theme || 'sky';
-  buildAvatarPicker('avatar-picker-create', 'selectedAvatarCreate');
-  showScreen('create-step2');
+function c1next() {
+  const n = byId('inp-sname').value.trim();
+  const e = byId('err-sname');
+  if (n.length < 3 || n.length > 30) { e.style.display='block'; return; }
+  e.style.display='none';
+  S.pendingName  = n;
+  S.pendingTheme = document.querySelector('#theme-picker .th-swatch.on')?.dataset.theme || 'sky';
+  buildAv('av-create','avCreate');
+  go('create-2');
 }
 
-async function submitCreateSquad() {
-  const name    = document.getElementById('inp-creator-name').value.trim();
-  const errName = document.getElementById('err-creator-name');
-  const errApi  = document.getElementById('err-create-api');
-  errName.style.display = 'none'; errApi.style.display = 'none';
-  if (name.length < 2 || name.length > 20) { errName.style.display = 'block'; return; }
-
-  const btn = document.getElementById('btn-create-submit');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Creating…';
-
+async function doCreate() {
+  const n = byId('inp-cname').value.trim();
+  const eN = byId('err-cname'), eA = byId('err-create');
+  eN.style.display='none'; eA.style.display='none';
+  if (n.length < 2 || n.length > 20) { eN.style.display='block'; return; }
+  const btn = byId('btn-create');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Creating…';
   try {
-    const res = await fetch(`${API_BASE}/squads`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: state.pendingSquadName, theme: state.pendingTheme,
-        creatorName: name, creatorAvatar: state.selectedAvatarCreate,
-        creatorMood: parseInt(document.getElementById('create-mood').value),
-        creatorStatus: document.getElementById('inp-creator-status').value,
-      }),
+    const r = await api('POST','/squads',{
+      name: S.pendingName, theme: S.pendingTheme,
+      creatorName: n, creatorAvatar: S.avCreate,
+      creatorMood: +byId('cmood').value,
+      creatorStatus: byId('inp-cstatus').value,
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to create squad');
-    state.squadCode = data.squad.code; state.squadName = data.squad.name;
-    state.squadTheme = data.squad.theme; state.expiresAt = data.squad.expiresAt;
-    state.memberId = data.memberId; state.poll = data.squad.poll;
-    state.pollVotes = data.squad.pollVotes; state.myVote = -1;
-    document.getElementById('code-display-val').textContent = state.squadCode;
-    showScreen('create-step3');
-  } catch (e) {
-    errApi.textContent = e.message; errApi.style.display = 'block';
-  } finally {
-    btn.disabled = false; btn.textContent = 'Create Squad →';
-  }
+    S.code=r.squad.code; S.name=r.squad.name; S.theme=r.squad.theme;
+    S.expiresAt=r.squad.expiresAt; S.memberId=r.memberId;
+    S.poll=r.squad.poll; S.pollVotes=r.squad.pollVotes; S.myVote=-1;
+    byId('code-val').textContent = S.code;
+    go('create-3');
+  } catch(e) { eA.textContent=e.message; eA.style.display='block'; }
+  finally { btn.disabled=false; btn.textContent='Create Squad →'; }
 }
 
-function enterDashboard() { initDashboard(); }
+function launchDash() { initDash(); }
 
 // ═══════════════════════════════════════════════════════════
 //  JOIN FLOW
 // ═══════════════════════════════════════════════════════════
-async function submitJoinSquad() {
-  const code    = document.getElementById('inp-join-code').value.trim().toUpperCase();
-  const name    = document.getElementById('inp-join-name').value.trim();
-  const errCode = document.getElementById('err-join-code');
-  const errName = document.getElementById('err-join-name');
-  const errApi  = document.getElementById('err-join-api');
-  errCode.style.display = 'none'; errName.style.display = 'none'; errApi.style.display = 'none';
-
-  if (!/^[A-Z0-9]{6}$/.test(code)) {
-    errCode.textContent = 'Enter a valid 6-character code.'; errCode.style.display = 'block'; return;
-  }
-  if (name.length < 2 || name.length > 20) { errName.style.display = 'block'; return; }
-
-  const btn = document.getElementById('btn-join-submit');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Joining…';
-
+async function doJoin() {
+  const code = byId('inp-jcode').value.trim().toUpperCase();
+  const name = byId('inp-jname').value.trim();
+  const eC=byId('err-jcode'), eN=byId('err-jname'), eA=byId('err-join');
+  eC.style.display='none'; eN.style.display='none'; eA.style.display='none';
+  if (!/^[A-Z0-9]{6}$/.test(code)) { eC.textContent='Enter a valid 6-character code.'; eC.style.display='block'; return; }
+  if (name.length < 2 || name.length > 20) { eN.style.display='block'; return; }
+  const btn = byId('btn-join');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Joining…';
   try {
-    const res = await fetch(`${API_BASE}/squads/${code}/join`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name, avatar: state.selectedAvatarJoin,
-        mood: parseInt(document.getElementById('join-mood').value),
-        status: document.getElementById('inp-join-status').value,
-      }),
+    const r = await api('POST',`/squads/${code}/join`,{
+      name, avatar: S.avJoin,
+      mood: +byId('jmood').value,
+      status: byId('inp-jstatus').value,
     });
-    const data = await res.json();
-    if (!res.ok) {
-      const msg = res.status === 404 ? 'Code not found. Check with your squad leader.'
-                : res.status === 410 ? 'This squad has ended.' : (data.error || 'Failed to join');
-      errCode.textContent = msg; errCode.style.display = 'block'; return;
-    }
-    state.squadCode = data.squad.code; state.squadName = data.squad.name;
-    state.squadTheme = data.squad.theme; state.expiresAt = data.squad.expiresAt;
-    state.memberId = data.memberId; state.members = data.squad.members;
-    state.poll = data.squad.poll; state.pollVotes = data.squad.pollVotes; state.myVote = -1;
-    initDashboard();
-  } catch (e) {
-    errApi.textContent = e.message; errApi.style.display = 'block';
-  } finally {
-    btn.disabled = false; btn.textContent = 'Join Squad →';
+    S.code=r.squad.code; S.name=r.squad.name; S.theme=r.squad.theme;
+    S.expiresAt=r.squad.expiresAt; S.memberId=r.memberId;
+    S.members=r.squad.members; S.poll=r.squad.poll;
+    S.pollVotes=r.squad.pollVotes; S.myVote=-1;
+    initDash();
+  } catch(e) {
+    const msg = e.status===404 ? 'Code not found. Check with your squad.' : e.status===410 ? 'This squad has ended.' : e.message;
+    eC.textContent=msg; eC.style.display='block';
   }
+  finally { btn.disabled=false; btn.textContent='Join Squad →'; }
 }
 
 // ═══════════════════════════════════════════════════════════
-//  DASHBOARD INIT
+//  DASHBOARD
 // ═══════════════════════════════════════════════════════════
-function initDashboard() {
-  document.getElementById('hdr-squad-name').textContent = state.squadName;
-  document.getElementById('hdr-squad-code').textContent = state.squadCode;
+function initDash() {
+  byId('hdr-squad').textContent = S.name;
   connectWS();
-  showScreen('dashboard');
-  startExpiryCountdown();
+  go('dash');
+  switchTab('squad');
+  startExpiry();
+}
+
+function switchTab(tab) {
+  ['squad','me','spotify','poll'].forEach(t => {
+    byId('pane-'+t).classList.toggle('active', t===tab);
+    byId('tab-'+t).classList.toggle('active', t===tab);
+  });
 }
 
 // ═══════════════════════════════════════════════════════════
 //  WEBSOCKET
 // ═══════════════════════════════════════════════════════════
 function connectWS() {
-  if (ws) { ws.onclose = null; ws.close(); }
-  const dot = document.getElementById('ws-indicator');
-  dot.className = 'ws-dot'; dot.title = 'Connecting…';
-  ws = new WebSocket(WS_BASE);
+  if (socket) { socket.onclose=null; socket.close(); }
+  const dot = byId('ws-dot');
+  dot.className='ws-dot'; dot.title='Connecting…';
+  socket = new WebSocket(WSU);
 
-  ws.onopen = () => {
-    dot.className = 'ws-dot connected'; dot.title = 'Live';
-    ws.send(JSON.stringify({ type: 'SUBSCRIBE', code: state.squadCode, memberId: state.memberId }));
-    if (ws._pingInterval) clearInterval(ws._pingInterval);
-    ws._pingInterval = setInterval(() => {
-      if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'PING' }));
+  socket.onopen = () => {
+    dot.className='ws-dot live'; dot.title='Live';
+    socket.send(JSON.stringify({type:'SUBSCRIBE',code:S.code,memberId:S.memberId}));
+    if (socket._ping) clearInterval(socket._ping);
+    socket._ping = setInterval(() => {
+      if (socket.readyState===WebSocket.OPEN) socket.send(JSON.stringify({type:'PING'}));
     }, 25000);
   };
 
-  ws.onmessage = (evt) => {
-    let msg; try { msg = JSON.parse(evt.data); } catch { return; }
-    if (msg.type === 'SQUAD_STATE')   applySquadState(msg.data);
-    else if (msg.type === 'SQUAD_EXTENDED') { state.expiresAt = msg.expiresAt; updateExpiryBanner(); showToast('Squad extended 24h! 🎉'); }
-    else if (msg.type === 'ERROR')    showToast(msg.error, true);
+  socket.onmessage = e => {
+    let m; try{m=JSON.parse(e.data)}catch{return}
+    if (m.type==='SQUAD_STATE')    applyState(m.data);
+    if (m.type==='SQUAD_EXTENDED') { S.expiresAt=m.expiresAt; updateExpiry(); toast('Squad extended 24h! 🎉'); }
+    if (m.type==='ERROR')          toast(m.error,true);
   };
 
-  ws.onerror = () => { dot.className = 'ws-dot error'; dot.title = 'Connection error'; };
-  ws.onclose = () => {
-    dot.className = 'ws-dot'; dot.title = 'Reconnecting…';
-    if (ws._pingInterval) clearInterval(ws._pingInterval);
-    setTimeout(() => { if (state.squadCode) connectWS(); }, 3000);
+  socket.onerror = () => { dot.className='ws-dot err'; };
+  socket.onclose = () => {
+    dot.className='ws-dot'; dot.title='Reconnecting…';
+    if (socket._ping) clearInterval(socket._ping);
+    setTimeout(()=>{ if(S.code) connectWS(); },3000);
   };
 }
 
 // ═══════════════════════════════════════════════════════════
-//  APPLY STATE
+//  APPLY SERVER STATE
 // ═══════════════════════════════════════════════════════════
-function applySquadState(squadData) {
-  state.members   = squadData.members || [];
-  state.poll      = squadData.poll;
-  state.pollVotes = squadData.pollVotes;
-  state.expiresAt = squadData.expiresAt;
+function applyState(d) {
+  S.members   = d.members || [];
+  S.poll      = d.poll;
+  S.pollVotes = d.pollVotes;
+  S.expiresAt = d.expiresAt;
 
-  const me = state.members.find(m => m.id === state.memberId);
+  const me = S.members.find(m => m.id===S.memberId);
   if (me) {
-    state.me = me;
-    document.getElementById('hdr-me-avatar').textContent      = me.avatar;
-    document.getElementById('hdr-me-name').textContent        = me.name;
-    document.getElementById('my-avatar-display').textContent  = me.avatar;
-    document.getElementById('my-name-display').textContent    = me.name;
-    document.getElementById('my-status-display').textContent  = me.status;
-    document.getElementById('my-mood-val').textContent        = me.mood;
-    document.getElementById('my-mood-slider').value           = me.mood;
-    const sel = document.getElementById('my-status-sel');
-    for (let o of sel.options) { if (o.value === me.status) { o.selected = true; break; } }
+    S.me = me;
+    byId('me-av-big').textContent    = me.avatar;
+    byId('me-name-big').textContent  = me.name;
+    byId('me-status-txt').textContent= me.status;
+    byId('me-moodv').textContent     = me.mood;
+    byId('me-mood').value            = me.mood;
+    const sel = byId('me-status-sel');
+    for(let o of sel.options) if(o.value===me.status){o.selected=true;break;}
   }
 
-  document.getElementById('hdr-count').textContent = `${state.members.length}/${state.members.length} here`;
-  renderCoworkers();
+  byId('hdr-count').textContent = `${S.members.length}/${S.members.length} people are here`;
+  renderSquad();
   renderPoll();
-  renderSidebarMembers();
-  updateExpiryBanner();
+  updateExpiry();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SQUAD RENDER  (the main screen matching the screenshot)
+// ═══════════════════════════════════════════════════════════
+function isLunch(status='') {
+  return LUNCH_STATUSES.some(l => status.toLowerCase().includes(l));
+}
+
+function moodColor(m) {
+  return m>=8 ? 'var(--green)' : m>=5 ? 'var(--yellow)' : 'var(--red)';
+}
+
+function renderSquad() {
+  const scroll = byId('squad-scroll');
+  scroll.innerHTML = '';
+
+  const members = S.members || [];
+
+  // Separate ungrouped (unique status) from grouped (2+ share same status)
+  const statusMap = {};
+  members.forEach(m => {
+    const k = (m.status||'Available').toLowerCase().trim();
+    if (!statusMap[k]) statusMap[k] = [];
+    statusMap[k].push(m);
+  });
+
+  const grouped   = Object.values(statusMap).filter(g => g.length >= 2);
+  const ungrouped = members.filter(m => {
+    const k = (m.status||'Available').toLowerCase().trim();
+    return statusMap[k].length < 2;
+  });
+
+  // Top flat grid (ungrouped)
+  if (ungrouped.length) {
+    const grid = document.createElement('div');
+    grid.className = 'member-grid';
+    ungrouped.forEach(m => grid.appendChild(makeMC(m)));
+    scroll.appendChild(grid);
+  }
+
+  // Group blocks
+  grouped.forEach(grp => {
+    const status = grp[0].status || 'Available';
+    const lunch  = isLunch(status);
+
+    const block = document.createElement('div');
+    block.className = 'group-block';
+
+    // Group label
+    const lbl = document.createElement('div');
+    lbl.className = 'group-label';
+    lbl.textContent = lunch ? '🍕 Ready to eat together!'
+      : (STATUS_EMOJI[status] || '💬') + ' ' + getGroupLabel(status);
+    block.appendChild(lbl);
+
+    // Grid of members
+    const grid = document.createElement('div');
+    grid.className = 'member-grid';
+    grp.forEach(m => grid.appendChild(makeMC(m)));
+    block.appendChild(grid);
+
+    // Chow time button for lunch groups
+    if (lunch) {
+      const wrap = document.createElement('div');
+      wrap.className = 'chow-btn-wrap';
+      wrap.innerHTML = '<button class="btn btn-yellow">🍽️ Chow time!</button>';
+      block.appendChild(wrap);
+    }
+
+    scroll.appendChild(block);
+  });
+
+  if (!members.length) {
+    scroll.innerHTML = '<p style="color:var(--muted);font-weight:700;text-align:center;padding:40px 0">No members yet — share your code!</p>';
+  }
+}
+
+function getGroupLabel(status) {
+  if (status.toLowerCase().includes('meeting')) return 'In a meeting!';
+  if (status.toLowerCase().includes('coffee'))  return 'Coffee break!';
+  if (status.toLowerCase().includes('focus') || status.toLowerCase().includes('deep')) return 'Deep work!';
+  if (status.toLowerCase().includes('break'))   return 'On a break!';
+  return status;
+}
+
+function makeMC(m) {
+  const isMe  = m.id===S.memberId;
+  const emoji = STATUS_EMOJI[m.status] || '💬';
+  const lunch = isLunch(m.status||'');
+
+  const wrap = document.createElement('div');
+  wrap.className = 'mc';
+
+  // name (with "(You)" suffix matching image)
+  const nm = document.createElement('div');
+  nm.className = 'mc-name';
+  nm.textContent = isMe ? m.name + ' (You)' : m.name;
+  wrap.appendChild(nm);
+
+  // face bubble
+  const fb = document.createElement('div');
+  fb.className = 'face-bubble' + (isMe ? ' me' : '');
+  fb.textContent = m.avatar;
+  wrap.appendChild(fb);
+
+  // status pill with dropdown for own card
+  const sw = document.createElement('div');
+  sw.className = 'status-wrap';
+
+  const pill = document.createElement('div');
+  pill.className = 'status-pill' + (lunch ? ' lunch-pill' : '');
+  pill.innerHTML = `${emoji} ${esc(m.status||'Available')} <span class="chev">▾</span>`;
+
+  if (isMe) {
+    const sel = document.createElement('select');
+    ['Just arrived','Sipping coffee','In focus mode','Ready to collaborate',
+     'Heads-down coding','Available','In a meeting','Ready for lunch',
+     'Deep work — do not disturb','Taking a break'].forEach(s => {
+       const o = document.createElement('option');
+       o.value=s; o.textContent=s;
+       if(s===m.status) o.selected=true;
+       sel.appendChild(o);
+     });
+    sel.onchange = () => { qStatus(sel.value); setTimeout(renderSquad,150); };
+    sw.appendChild(pill);
+    sw.appendChild(sel);
+  } else {
+    pill.style.cursor='default';
+    sw.appendChild(pill);
+  }
+  wrap.appendChild(sw);
+
+  // spotify mini badge
+  if (m.spotify) {
+    const sp = document.createElement('div');
+    sp.style.cssText='font-size:10px;font-weight:700;color:#15803d;background:var(--green-lt);border-radius:999px;padding:2px 8px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center';
+    sp.textContent = '♪ ' + m.spotify.track;
+    wrap.appendChild(sp);
+  }
+
+  return wrap;
 }
 
 // ═══════════════════════════════════════════════════════════
 //  PRESENCE UPDATES
 // ═══════════════════════════════════════════════════════════
-function sendPresenceUpdate(fields) {
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ type: 'PRESENCE_UPDATE', ...fields }));
+function sendPresence(fields) {
+  if (socket && socket.readyState===WebSocket.OPEN) {
+    socket.send(JSON.stringify({type:'PRESENCE_UPDATE',...fields}));
   } else {
-    fetch(`${API_BASE}/squads/${state.squadCode}/members/${state.memberId}`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(fields),
+    fetch(`${API}/squads/${S.code}/members/${S.memberId}`,{
+      method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(fields)
     }).catch(console.error);
   }
 }
 
-function updateMyStatus() {
-  const status = document.getElementById('my-status-sel').value;
-  document.getElementById('my-status-display').textContent = status;
-  sendPresenceUpdate({ status });
-  showToast('Status updated!');
+function updateStatus() {
+  const s = byId('me-status-sel').value;
+  byId('me-status-txt').textContent=s;
+  sendPresence({status:s}); toast('Status updated!');
 }
 
-function previewMood(v) { document.getElementById('my-mood-val').textContent = v; }
-
-let moodDebounce = null;
-function updateMyMood(v) {
-  document.getElementById('my-mood-val').textContent = v;
-  clearTimeout(moodDebounce);
-  moodDebounce = setTimeout(() => sendPresenceUpdate({ mood: parseInt(v) }), 300);
+let moodT=null;
+function updateMood(v) {
+  byId('me-moodv').textContent=v;
+  clearTimeout(moodT);
+  moodT=setTimeout(()=>sendPresence({mood:+v}),300);
 }
 
-function quickStatus(s) {
-  document.getElementById('my-status-display').textContent = s;
-  const sel = document.getElementById('my-status-sel');
-  let found = false;
-  for (let o of sel.options) { if (o.value === s) { o.selected = true; found = true; break; } }
-  if (!found) { const opt = document.createElement('option'); opt.value = s; opt.textContent = s; opt.selected = true; sel.appendChild(opt); }
-  sendPresenceUpdate({ status: s });
-  showToast('Status: ' + s);
+function qStatus(s) {
+  byId('me-status-txt').textContent=s;
+  const sel=byId('me-status-sel');
+  let found=false;
+  for(let o of sel.options) if(o.value===s){o.selected=true;found=true;break;}
+  if(!found){const o=document.createElement('option');o.value=s;o.textContent=s;o.selected=true;sel.appendChild(o);}
+  sendPresence({status:s}); toast(s);
 }
 
 // ═══════════════════════════════════════════════════════════
 //  SPOTIFY
 // ═══════════════════════════════════════════════════════════
-function toggleSpotify() {
-  spotifyConnected ? disconnectSpotify() : connectSpotify();
-}
+function toggleSpotify() { spotifyOn ? disconnectSpotify() : connectSpotify(); }
 
 function connectSpotify() {
-  const url   = `${API_BASE}/auth/spotify?memberId=${state.memberId}&squadCode=${state.squadCode}`;
-  const popup = window.open(url, 'spotify-auth', 'width=480,height=700,left=200,top=100');
-  if (!popup) { showToast('Allow pop-ups for this page to connect Spotify.', true); return; }
-
-  function onMsg(evt) {
-    if (evt.data?.type === 'SPOTIFY_CONNECTED') {
-      window.removeEventListener('message', onMsg);
-      spotifyConnected = true;
-      document.getElementById('spotify-btn-label').textContent = 'Disconnect';
-      showToast('Spotify connected! 🎵');
-      pollNowPlaying();
-      spotifyPollTimer = setInterval(pollNowPlaying, 15000);
-    } else if (evt.data?.type === 'SPOTIFY_ERROR') {
-      window.removeEventListener('message', onMsg);
-      showToast('Spotify: ' + (evt.data.error || 'error'), true);
+  const url=`${API}/auth/spotify?memberId=${S.memberId}&squadCode=${S.code}`;
+  const p=window.open(url,'spotify-auth','width=480,height=700,left=200,top=100');
+  if(!p){toast('Allow pop-ups to connect Spotify',true);return;}
+  function onMsg(e) {
+    if(e.data?.type==='SPOTIFY_CONNECTED'){
+      window.removeEventListener('message',onMsg);
+      spotifyOn=true; byId('sp-btn').textContent='Disconnect';
+      toast('Spotify connected! 🎵');
+      pollNP();
+      spTimer=setInterval(pollNP,15000);
+    } else if(e.data?.type==='SPOTIFY_ERROR'){
+      window.removeEventListener('message',onMsg);
+      toast('Spotify: '+(e.data.error||'error'),true);
     }
   }
-  window.addEventListener('message', onMsg);
+  window.addEventListener('message',onMsg);
 }
 
 async function disconnectSpotify() {
-  clearInterval(spotifyPollTimer);
-  spotifyConnected = false;
-  document.getElementById('spotify-btn-label').textContent = 'Connect Spotify';
-  renderMySpotify(null);
-  sendPresenceUpdate({ spotify: null });
-  try { await fetch(`${API_BASE}/auth/spotify?memberId=${state.memberId}&squadCode=${state.squadCode}`, { method: 'DELETE' }); } catch {}
-  showToast('Spotify disconnected');
+  clearInterval(spTimer); spotifyOn=false;
+  byId('sp-btn').textContent='Connect Spotify';
+  renderSP(null); sendPresence({spotify:null});
+  try{await fetch(`${API}/auth/spotify?memberId=${S.memberId}&squadCode=${S.code}`,{method:'DELETE'});}catch{}
+  toast('Spotify disconnected');
 }
 
-async function pollNowPlaying() {
-  try {
-    const res = await fetch(`${API_BASE}/auth/spotify/now-playing?memberId=${state.memberId}&squadCode=${state.squadCode}`);
-    if (res.status === 401) { clearInterval(spotifyPollTimer); spotifyConnected = false; document.getElementById('spotify-btn-label').textContent = 'Connect Spotify'; renderMySpotify(null); return; }
-    if (!res.ok) return;
-    const data = await res.json();
-    renderMySpotify(data.playing ? data : null, !data.playing);
-  } catch {}
+async function pollNP() {
+  try{
+    const r=await fetch(`${API}/auth/spotify/now-playing?memberId=${S.memberId}&squadCode=${S.code}`);
+    if(r.status===401){clearInterval(spTimer);spotifyOn=false;byId('sp-btn').textContent='Connect Spotify';renderSP(null);return;}
+    if(!r.ok) return;
+    const d=await r.json();
+    renderSP(d.playing?d:null, !d.playing);
+  }catch{}
 }
 
-function renderMySpotify(sp, connectedIdle = false) {
-  const art  = document.getElementById('spotify-art');
-  const info = document.getElementById('spotify-status-line');
-  const prog = document.getElementById('spotify-progress');
-  const fill = document.getElementById('spotify-progress-fill');
-
-  if (!sp && !connectedIdle) {
-    art.innerHTML  = '🎵';
-    info.innerHTML = '<span class="spotify-none">Not connected — click "Connect Spotify" to share what you\'re listening to</span>';
-    prog.style.display = 'none';
-  } else if (!sp && connectedIdle) {
-    art.innerHTML  = '<span style="font-size:30px">⏸</span>';
-    info.innerHTML = '<span class="spotify-none">Spotify connected — nothing playing right now</span>';
-    prog.style.display = 'none';
+function renderSP(sp, idle=false) {
+  const art=byId('sp-art'), info=byId('sp-info'), prog=byId('sp-prog'), fill=byId('sp-prog-fill');
+  if(!sp&&!idle){
+    art.innerHTML='🎵';
+    info.innerHTML='<p class="sp-none">Connect Spotify to share what you\'re listening to.</p>';
+    prog.style.display='none';
+  } else if(!sp&&idle){
+    art.innerHTML='⏸';
+    info.innerHTML='<p class="sp-none">Spotify connected — nothing playing right now.</p>';
+    prog.style.display='none';
   } else {
-    art.innerHTML  = sp.albumArt
-      ? `<img src="${sp.albumArt}" style="width:58px;height:58px;object-fit:cover" />`
-      : '🎵';
-    const pct = sp.durationMs > 0 ? Math.round((sp.progressMs / sp.durationMs) * 100) : 0;
+    art.innerHTML = sp.albumArt ? `<img src="${sp.albumArt}" alt="art" />` : '🎵';
+    const pct = sp.durationMs>0 ? Math.round(sp.progressMs/sp.durationMs*100) : 0;
     const link = sp.trackUrl
       ? `<a href="${sp.trackUrl}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(sp.track)}</a>`
       : esc(sp.track);
-    info.innerHTML = `<span class="now-dot"></span><div class="spotify-track">${link}</div><div class="spotify-artist">${esc(sp.artist)}</div>`;
-    prog.style.display = 'block';
-    fill.style.width   = pct + '%';
+    info.innerHTML=`<span class="now-dot"></span><div class="sp-track">${link}</div><div class="sp-artist">${esc(sp.artist)}</div>`;
+    prog.style.display='block'; fill.style.width=pct+'%';
   }
-}
-
-// ═══════════════════════════════════════════════════════════
-//  COWORKER GRID  — grouped by shared status
-// ═══════════════════════════════════════════════════════════
-function moodColor(m) {
-  if (m >= 8) return 'var(--green)';
-  if (m >= 5) return 'var(--yellow)';
-  return 'var(--red)';
-}
-
-function renderCoworkers() {
-  const grid   = document.getElementById('coworker-grid');
-  const search = (document.getElementById('coworker-search')?.value || '').toLowerCase();
-  const members = (state.members || []).filter(m =>
-    m.name.toLowerCase().includes(search) || (m.status || '').toLowerCase().includes(search)
-  );
-
-  document.getElementById('member-count-badge').textContent = `${members.length} online`;
-
-  if (members.length === 0) {
-    grid.innerHTML = '<p style="color:var(--muted);font-weight:700;padding:20px 0;text-align:center">No members found</p>';
-    return;
-  }
-
-  // Group by status
-  const groups = {};
-  members.forEach(m => {
-    const key = m.status || 'Available';
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(m);
-  });
-
-  grid.innerHTML = '';
-
-  Object.entries(groups).forEach(([status, grpMembers]) => {
-    const isLunch = status.toLowerCase().includes('lunch') || status.toLowerCase().includes('munch');
-    const emoji   = STATUS_EMOJI[status] || '💬';
-
-    // If more than 1 in this group, show a group block
-    if (grpMembers.length >= 2 && !search) {
-      const block = document.createElement('div');
-      block.className = 'group-block';
-
-      const title = document.createElement('div');
-      title.className = 'group-title';
-      title.textContent = getGroupTitle(status);
-      block.appendChild(title);
-
-      const inner = document.createElement('div');
-      inner.className = 'member-grid';
-      grpMembers.forEach(m => inner.appendChild(makeMemberCard(m)));
-      block.appendChild(inner);
-
-      if (isLunch) {
-        const action = document.createElement('div');
-        action.className = 'group-action';
-        action.innerHTML = `<button class="btn btn-yellow" style="font-size:16px">🍽️ Chow time!</button>`;
-        block.appendChild(action);
-      }
-
-      grid.appendChild(block);
-    } else {
-      // solo members just go into a flat grid
-      let flat = grid.querySelector('.flat-grid');
-      if (!flat) {
-        flat = document.createElement('div');
-        flat.className = 'member-grid flat-grid';
-        grid.appendChild(flat);
-      }
-      grpMembers.forEach(m => flat.appendChild(makeMemberCard(m)));
-    }
-  });
-}
-
-function getGroupTitle(status) {
-  if (status.toLowerCase().includes('meeting'))   return '📅 In a meeting together!';
-  if (status.toLowerCase().includes('lunch') || status.toLowerCase().includes('munch'))
-    return '🍕 Ready to eat together!';
-  if (status.toLowerCase().includes('coffee'))    return '☕ Coffee break crew!';
-  if (status.toLowerCase().includes('deep work') || status.toLowerCase().includes('focus'))
-    return '🎯 Deep work mode!';
-  if (status.toLowerCase().includes('break'))     return '🌿 On a break!';
-  return STATUS_EMOJI[status] || '💬' + ' ' + status;
-}
-
-function makeMemberCard(m) {
-  const isMe   = m.id === state.memberId;
-  const emoji  = STATUS_EMOJI[m.status] || '💬';
-  const moodPct = ((m.mood || 5) / 10) * 100;
-  const sp     = m.spotify;
-
-  const div = document.createElement('div');
-  div.className = 'member-card';
-  if (isMe) div.innerHTML += '<div class="me-tag">you</div>';
-
-  // avatar
-  const av = document.createElement('div');
-  av.className = 'avatar-face sm' + (isMe ? ' me' : '');
-  av.textContent = m.avatar;
-  div.appendChild(av);
-
-  // name
-  const nm = document.createElement('div');
-  nm.className = 'mc-name';
-  nm.textContent = m.name;
-  div.appendChild(nm);
-
-  // mood bar
-  const mbw = document.createElement('div');
-  mbw.className = 'mood-bar-wrap';
-  mbw.style.width = '100%';
-  mbw.innerHTML = `<div class="mood-bar-fill" style="width:${moodPct}%;background:${moodColor(m.mood||5)}"></div>`;
-  div.appendChild(mbw);
-
-  // status pill — clickable for own card
-  const stWrap = document.createElement('div');
-  stWrap.className = 'status-dropdown-wrap';
-
-  if (isMe) {
-    const pill = document.createElement('div');
-    pill.className = 'mc-status';
-    pill.innerHTML = `${emoji} ${esc(m.status || 'Available')} <span class="chevron">▾</span>`;
-
-    const sel = document.createElement('select');
-    ['Just arrived','Sipping coffee','In focus mode','Ready to collaborate',
-     'Heads-down coding','Available','In a meeting','Ready for lunch',
-     'Deep work — do not disturb','Taking a break'].forEach(s => {
-      const o = document.createElement('option');
-      o.value = s; o.textContent = s;
-      if (s === m.status) o.selected = true;
-      sel.appendChild(o);
-    });
-    sel.onchange = () => {
-      quickStatus(sel.value);
-      // re-render after tiny delay to get updated state
-      setTimeout(renderCoworkers, 200);
-    };
-    stWrap.appendChild(pill);
-    stWrap.appendChild(sel);
-  } else {
-    const pill = document.createElement('div');
-    pill.className = 'mc-status';
-    pill.style.cursor = 'default';
-    pill.innerHTML = `${emoji} ${esc(m.status || 'Available')}`;
-    stWrap.appendChild(pill);
-  }
-  div.appendChild(stWrap);
-
-  // spotify
-  if (sp) {
-    const spEl = document.createElement('div');
-    spEl.className = 'mc-spotify';
-    spEl.innerHTML = sp.albumArt
-      ? `<img src="${sp.albumArt}" style="width:10px;height:10px;border-radius:2px;vertical-align:middle;margin-right:3px" />` : '♪ ';
-    spEl.innerHTML += esc(sp.track);
-    div.appendChild(spEl);
-  }
-
-  return div;
 }
 
 // ═══════════════════════════════════════════════════════════
 //  POLL
 // ═══════════════════════════════════════════════════════════
 function renderPoll() {
-  if (!state.poll) return;
-  document.getElementById('poll-question').textContent = state.poll.question;
-  const container = document.getElementById('poll-opts');
-  container.innerHTML = '';
-  const total = (state.pollVotes || []).reduce((a,b)=>a+b, 0);
-  state.poll.options.forEach((opt, i) => {
-    const votes = (state.pollVotes || [])[i] || 0;
-    const pct   = total > 0 ? Math.round((votes / total) * 100) : 0;
-    const voted = state.myVote >= 0;
-    const div = document.createElement('div');
-    div.className = 'poll-opt' + (state.myVote === i ? ' my-vote' : '');
-    div.innerHTML = `
-      <div class="poll-opt-bar" style="width:${voted ? pct : 0}%"></div>
-      <span>${esc(opt)}</span>
-      ${voted ? `<span class="poll-pct">${pct}%</span>` : ''}
-    `;
-    if (!voted) div.onclick = () => castVote(i);
-    container.appendChild(div);
+  if(!S.poll) return;
+  byId('poll-q').textContent=S.poll.question;
+  const con=byId('poll-opts'); con.innerHTML='';
+  const total=(S.pollVotes||[]).reduce((a,b)=>a+b,0);
+  S.poll.options.forEach((opt,i)=>{
+    const votes=(S.pollVotes||[])[i]||0;
+    const pct=total>0?Math.round(votes/total*100):0;
+    const voted=S.myVote>=0;
+    const div=document.createElement('div');
+    div.className='poll-opt'+(S.myVote===i?' voted':'');
+    div.innerHTML=`<div class="poll-bar" style="width:${voted?pct:0}%"></div><span>${esc(opt)}</span>${voted?`<span class="poll-pct">${pct}%</span>`:''}`;
+    if(!voted) div.onclick=()=>castVote(i);
+    con.appendChild(div);
   });
-  if (state.myVote >= 0) document.getElementById('poll-voted-note').style.display = 'block';
+  if(S.myVote>=0) byId('poll-note').style.display='block';
 }
 
 async function castVote(i) {
-  try {
-    const res = await fetch(`${API_BASE}/squads/${state.squadCode}/poll/vote`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ memberId: state.memberId, optionIndex: i }),
-    });
-    const data = await res.json();
-    if (!res.ok) { if (res.status === 409) { showToast('Already voted!', true); return; } throw new Error(data.error); }
-    state.myVote = i; state.pollVotes = data.pollVotes;
-    document.getElementById('poll-voted-note').style.display = 'block';
-    renderPoll(); showToast('Vote recorded! 🗳️');
-  } catch (e) { showToast(e.message, true); }
+  try{
+    const r=await api('POST',`/squads/${S.code}/poll/vote`,{memberId:S.memberId,optionIndex:i});
+    S.myVote=i; S.pollVotes=r.pollVotes;
+    byId('poll-note').style.display='block';
+    renderPoll(); toast('Vote recorded! 🗳️');
+  }catch(e){toast(e.message,true);}
 }
 
 // ═══════════════════════════════════════════════════════════
-//  SIDEBAR MEMBERS
+//  EXPIRY
 // ═══════════════════════════════════════════════════════════
-function renderSidebarMembers() {
-  const list = document.getElementById('sidebar-member-list');
-  list.innerHTML = '';
-  (state.members || []).forEach(m => {
-    const isMe = m.id === state.memberId;
-    const div  = document.createElement('div');
-    div.className = 'sb-member';
-    div.innerHTML = `
-      <div class="avatar-face xs">${m.avatar}</div>
-      <div class="sb-info">
-        <div class="sb-name">${esc(m.name)}${isMe ? ' <span style="color:var(--accent);font-size:10px">(you)</span>' : ''}</div>
-        <div class="sb-status">${esc(m.status || 'Available')}</div>
-      </div>
-      <div class="sb-mood-dot" style="background:${moodColor(m.mood||5)}" title="Mood ${m.mood}"></div>
-    `;
-    list.appendChild(div);
-  });
+function startExpiry() {
+  if(expTimer) clearInterval(expTimer);
+  updateExpiry();
+  expTimer=setInterval(updateExpiry,60000);
 }
-
-// ═══════════════════════════════════════════════════════════
-//  EXPIRY BANNER
-// ═══════════════════════════════════════════════════════════
-function startExpiryCountdown() {
-  if (expiryInterval) clearInterval(expiryInterval);
-  updateExpiryBanner();
-  expiryInterval = setInterval(updateExpiryBanner, 60000);
+function updateExpiry() {
+  if(!S.expiresAt) return;
+  const rem=S.expiresAt-Date.now();
+  const ban=byId('exp-banner'), txt=byId('exp-txt'), ext=byId('btn-extend');
+  if(rem<=0){txt.textContent='⚠️ Squad expired.';ban.classList.add('warn');return;}
+  const h=Math.floor(rem/3600000), mn=Math.floor((rem%3600000)/60000);
+  txt.textContent=`⏱ Expires in ${h>0?h+'h ':''} ${mn}m`;
+  if(rem<2*3600000){ban.classList.add('warn');if(S.me?.isCreator)ext.style.display='inline-flex';}
+  else{ban.classList.remove('warn');ext.style.display='none';}
 }
-
-function updateExpiryBanner() {
-  if (!state.expiresAt) return;
-  const remaining = state.expiresAt - Date.now();
-  const banner = document.getElementById('expires-banner');
-  const text   = document.getElementById('expires-text');
-  const extBtn = document.getElementById('btn-extend');
-  if (remaining <= 0) { text.textContent = '⚠️ This squad has expired.'; banner.classList.add('warn'); return; }
-  const hours = Math.floor(remaining / 3600000);
-  const mins  = Math.floor((remaining % 3600000) / 60000);
-  text.textContent = `⏱ Squad expires in ${hours > 0 ? hours + 'h ' : ''}${mins}m`;
-  if (remaining < 2 * 3600000) { banner.classList.add('warn'); if (state.me?.isCreator) extBtn.style.display = 'inline-flex'; }
-  else { banner.classList.remove('warn'); extBtn.style.display = 'none'; }
-}
-
 async function extendSquad() {
-  try {
-    const res = await fetch(`${API_BASE}/squads/${state.squadCode}/extend`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ memberId: state.memberId }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-    state.expiresAt = data.expiresAt; updateExpiryBanner(); showToast('Squad extended 24h! 🎉');
-  } catch (e) { showToast(e.message, true); }
+  try{
+    const r=await api('POST',`/squads/${S.code}/extend`,{memberId:S.memberId});
+    S.expiresAt=r.expiresAt; updateExpiry(); toast('Squad extended 24h! 🎉');
+  }catch(e){toast(e.message,true);}
 }
 
 // ═══════════════════════════════════════════════════════════
 //  LEAVE
 // ═══════════════════════════════════════════════════════════
 async function leaveSquad() {
-  if (!confirm('Leave the squad?')) return;
-  try { await fetch(`${API_BASE}/squads/${state.squadCode}/members/${state.memberId}`, { method: 'DELETE' }); } catch {}
-  if (ws) { ws.onclose = null; ws.close(); }
-  clearInterval(spotifyPollTimer); clearInterval(expiryInterval);
-  state = { ...state, squadCode:'', memberId:'', me:null, members:[], selectedAvatarCreate: AVATARS[0], selectedAvatarJoin: AVATARS[0] };
-  spotifyConnected = false; showScreen('landing'); showToast('You left the squad 👋');
+  if(!confirm('Leave the squad?')) return;
+  try{await fetch(`${API}/squads/${S.code}/members/${S.memberId}`,{method:'DELETE'});}catch{}
+  if(socket){socket.onclose=null;socket.close();}
+  clearInterval(spTimer); clearInterval(expTimer);
+  S={...S,code:'',memberId:'',me:null,members:[],avCreate:AVATARS[0],avJoin:AVATARS[0]};
+  spotifyOn=false; go('landing'); toast('Left the squad 👋');
 }
 
 // ═══════════════════════════════════════════════════════════
 //  UTILS
 // ═══════════════════════════════════════════════════════════
 function copyCode() {
-  navigator.clipboard?.writeText(state.squadCode).catch(()=>{});
-  [document.getElementById('code-display-val'), document.getElementById('hdr-squad-code')]
-    .forEach(el => { if(el) { el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),500); } });
-  showToast('Code copied! ' + state.squadCode);
+  navigator.clipboard?.writeText(S.code).catch(()=>{});
+  const el=byId('code-val');
+  el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),400);
+  toast('Code copied! '+S.code);
 }
 
-function esc(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-let toastTimeout = null;
-function showToast(msg, isError = false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (isError ? ' error' : ' success');
-  if (toastTimeout) clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => t.classList.remove('show'), 3000);
+async function api(method, path, body) {
+  const r = await fetch(API+path,{
+    method, headers:{'Content-Type':'application/json'},
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const d = await r.json().catch(()=>({}));
+  if(!r.ok) { const err=new Error(d.error||'Request failed'); err.status=r.status; throw err; }
+  return d;
 }
+
+let toastT=null;
+function toast(msg, isErr=false) {
+  const t=byId('toast');
+  t.textContent=msg;
+  t.className='show'+(isErr?' err':' ok');
+  if(toastT) clearTimeout(toastT);
+  toastT=setTimeout(()=>t.className='',3000);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PWA — SERVICE WORKER + INSTALL
+// ═══════════════════════════════════════════════════════════
+let deferredPrompt = null;
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    console.log('SW registered:', reg.scope);
+  }).catch(err => console.log('SW failed:', err));
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  byId('install-banner').classList.add('show');
+});
+
+function installPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => {
+    deferredPrompt = null;
+    byId('install-banner').classList.remove('show');
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  byId('install-banner').classList.remove('show');
+  toast('App installed! 🎉');
+});
 
 // ═══════════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════════
-buildAvatarPicker('avatar-picker-create', 'selectedAvatarCreate');
-buildAvatarPicker('avatar-picker-join',   'selectedAvatarJoin');
+buildAv('av-create','avCreate');
+buildAv('av-join','avJoin');
 </script>
 </body>
 </html>
