@@ -1,0 +1,1027 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BOB, WYD?</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f1a;
+    --surface: #1a1a2e;
+    --surface2: #16213e;
+    --border: #2d2d4e;
+    --text: #e8e8f0;
+    --muted: #8888aa;
+    --accent: #7c5cd8;
+    --accent2: #3b82d4;
+    --green: #22c55e;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --pink: #ec4899;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; }
+
+  /* ── LANDING ── */
+  #screen-landing {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    padding: 40px 20px;
+    background: radial-gradient(ellipse at 50% 0%, #1a0a3e 0%, #0f0f1a 70%);
+  }
+  .landing-logo {
+    text-align: center;
+  }
+  .landing-logo h1 {
+    font-size: 52px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, #7c5cd8, #3b82d4, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .landing-logo p {
+    color: var(--muted);
+    font-size: 16px;
+    margin-top: 8px;
+  }
+  .landing-tagline {
+    text-align: center;
+    max-width: 420px;
+  }
+  .landing-tagline p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .landing-btns {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: var(--radius);
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    text-decoration: none;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:hover { opacity: 0.88; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-accent2 { background: var(--accent2); color: #fff; }
+  .btn-sm { padding: 7px 16px; font-size: 13px; }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .landing-features {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 480px;
+  }
+  .feat-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ── MODAL / FORM SCREENS ── */
+  #screen-create, #screen-join {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: radial-gradient(ellipse at 50% 0%, #1a0a3e 0%, #0f0f1a 70%);
+  }
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .form-card h2 {
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .form-group input, .form-group select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--accent);
+  }
+  .form-group select option { background: var(--surface2); }
+  .form-error {
+    color: var(--red);
+    font-size: 12px;
+    margin-top: -10px;
+  }
+
+  /* avatar picker */
+  .avatar-grid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .avatar-opt {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    background: var(--surface2);
+    transition: border-color 0.15s, transform 0.1s;
+    user-select: none;
+  }
+  .avatar-opt:hover { transform: scale(1.08); }
+  .avatar-opt.selected { border-color: var(--accent); }
+
+  /* theme picker */
+  .theme-grid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .theme-opt {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: border-color 0.15s, transform 0.1s;
+  }
+  .theme-opt:hover { transform: scale(1.08); }
+  .theme-opt.selected { border-color: var(--accent); }
+
+  /* join code display */
+  .code-display {
+    background: var(--surface2);
+    border: 2px dashed var(--accent);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+  .code-display .code-val {
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: 8px;
+    color: var(--accent);
+  }
+  .code-display p { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+  /* ── DASHBOARD ── */
+  #screen-dashboard {
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .dash-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .dash-header .logo {
+    font-size: 20px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #7c5cd8, #3b82d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .squad-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .squad-code-badge {
+    background: var(--accent);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+    cursor: pointer;
+    title: "Click to copy";
+  }
+  .header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .me-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 14px 4px 6px;
+    font-size: 13px;
+  }
+  .me-badge .avatar-sm { font-size: 20px; }
+
+  .dash-body {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    flex: 1;
+    overflow: hidden;
+    max-height: calc(100vh - 57px);
+  }
+  @media (max-width: 700px) {
+    .dash-body { grid-template-columns: 1fr; max-height: none; overflow: visible; }
+    .dash-sidebar { border-left: none; border-top: 1px solid var(--border); }
+  }
+
+  .dash-main {
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* My Card */
+  .my-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .my-card-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .my-avatar {
+    font-size: 48px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--accent);
+    flex-shrink: 0;
+  }
+  .my-info { flex: 1; }
+  .my-info .my-name { font-weight: 700; font-size: 17px; }
+  .my-info .my-status-text { color: var(--muted); font-size: 13px; }
+  .my-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .control-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .control-block label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .control-block select, .control-block input[type="text"] {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+  }
+  .control-block select:focus, .control-block input[type="text"]:focus {
+    border-color: var(--accent);
+  }
+  .mood-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .mood-row input[type="range"] {
+    flex: 1;
+    accent-color: var(--accent);
+  }
+  .mood-val {
+    font-weight: 700;
+    font-size: 18px;
+    min-width: 28px;
+    text-align: center;
+  }
+
+  /* Spotify card */
+  .spotify-card {
+    background: #111827;
+    border: 1px solid #1db954;
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .spotify-art {
+    width: 54px;
+    height: 54px;
+    border-radius: 6px;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+  .spotify-info { flex: 1; min-width: 0; }
+  .spotify-track {
+    font-weight: 700;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .spotify-artist { color: #1db954; font-size: 12px; }
+  .spotify-badge {
+    background: #1db954;
+    color: #000;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .spotify-none { color: var(--muted); font-size: 13px; }
+
+  /* Search + coworkers */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .section-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .search-bar {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    margin-bottom: 12px;
+  }
+  .search-bar:focus { border-color: var(--accent); }
+
+  .coworker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .coworker-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .coworker-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .coworker-card.theme-ocean::before { background: linear-gradient(90deg, #3b82d4, #06b6d4); }
+  .coworker-card.theme-forest::before { background: linear-gradient(90deg, #22c55e, #84cc16); }
+  .coworker-card.theme-sunset::before { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+  .coworker-card.theme-galaxy::before { background: linear-gradient(90deg, #7c5cd8, #ec4899); }
+  .coworker-card.theme-minimal::before { background: var(--border); }
+  .coworker-card:hover { border-color: var(--accent); }
+  .coworker-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .coworker-avatar {
+    font-size: 30px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .online-dot {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 2px solid var(--surface);
+  }
+  .coworker-name { font-weight: 700; font-size: 14px; }
+  .coworker-status { color: var(--muted); font-size: 12px; }
+  .coworker-mood-bar {
+    height: 4px;
+    border-radius: 999px;
+    background: var(--surface2);
+    overflow: hidden;
+  }
+  .coworker-mood-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.4s;
+  }
+  .coworker-spotify {
+    font-size: 11px;
+    color: #1db954;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .coworker-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .mood-chip {
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface2);
+    border-radius: 999px;
+    padding: 2px 8px;
+  }
+
+  /* ── SIDEBAR ── */
+  .dash-sidebar {
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: var(--surface);
+  }
+
+  /* Poll */
+  .poll-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .poll-title { font-weight: 700; font-size: 14px; }
+  .poll-question { font-size: 14px; color: var(--text); line-height: 1.5; }
+  .poll-opts {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .poll-opt {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .poll-opt:hover { border-color: var(--accent); }
+  .poll-opt.voted { border-color: var(--accent); }
+  .poll-opt-bar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    border-radius: var(--radius-sm);
+    opacity: 0.15;
+    transition: width 0.4s;
+  }
+  .poll-opt-bar.selected { background: var(--accent); opacity: 0.25; }
+  .poll-opt-bar.other { background: var(--muted); opacity: 0.1; }
+  .poll-pct { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .poll-voted-label { font-size: 11px; color: var(--accent); margin-top: -4px; }
+
+  /* Members sidebar list */
+  .member-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .member-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .member-row .avatar-sm {
+    font-size: 22px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .member-row .m-name { font-size: 13px; font-weight: 600; flex: 1; }
+  .member-row .m-status { font-size: 11px; color: var(--muted); }
+  .member-mood-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Auto-status pill */
+  .auto-status-strip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .auto-status-strip label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+  .auto-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .auto-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .auto-pill:hover { border-color: var(--accent); background: var(--surface2); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--accent);
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 9999;
+    transition: transform 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Online badge */
+  .online-badge {
+    background: var(--green);
+    color: #000;
+    border-radius: 999px;
+    padding: 1px 8px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  /* Footer */
+  .mib-footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    padding: 20px;
+    border-top: 1px solid var(--border);
+    opacity: 0.6;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Code copied flash */
+  .flash { animation: flash 0.4s; }
+  @keyframes flash { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* Pulse for now-playing */
+  .now-playing-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #1db954;
+    margin-right: 4px;
+    animation: pulse 1.4s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  .section-block { display: flex; flex-direction: column; gap: 6px; }
+
+  input[type="range"] { cursor: pointer; }
+
+  /* step indicator for create flow */
+  .step-dots {
+    display: flex; gap: 6px; justify-content: center;
+  }
+  .step-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border); transition: background 0.2s;
+  }
+  .step-dot.active { background: var(--accent); }
+</style>
+</head>
+<body>
+
+
+<div id="screen-landing" class="screen active">
+  <div class="landing-logo">
+    <h1>BOB, WYD?</h1>
+    <p>Your squad's real-time presence, vibes &amp; music — all in one place.</p>
+  </div>
+  <div class="landing-tagline">
+    <p>No accounts. Just drop a code, pick your vibe, and see what your coworkers are up to — right now.</p>
+  </div>
+  <div class="landing-btns">
+    <button class="btn btn-primary">+ Create Squad</button>
+    <button class="btn btn-accent2">Join Squad</button>
+  </div>
+  <div class="landing-features">
+    <span class="feat-pill">Real-time presence</span>
+    <span class="feat-pill">Spotify Now Playing</span>
+    <span class="feat-pill">Daily Poll</span>
+    <span class="feat-pill">Mood tracker</span>
+    <span class="feat-pill">Custom avatars</span>
+    <span class="feat-pill">6-digit codes</span>
+  </div>
+  <div class="mib-footer">Made with IBM Bob</div>
+</div>
+
+
+<div id="screen-create-step1" class="screen">
+  <div class="form-card">
+    <div class="step-dots">
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+    </div>
+    <h2>Create Your Squad</h2>
+    <div class="form-group">
+      <label>Squad Name</label>
+      <input id="inp-squad-name" type="text" />
+      <div id="err-squad-name" class="form-error" style="display:none">Please enter a squad name (3–30 chars)</div>
+    </div>
+    <div class="form-group">
+      <label>Choose a Theme</label>
+      <div class="theme-grid" id="theme-picker">
+        <div class="theme-opt selected" data-theme="galaxy" style="background:linear-gradient(135deg,#7c5cd8,#ec4899)" title="Galaxy"></div>
+        <div class="theme-opt" data-theme="ocean" style="background:linear-gradient(135deg,#3b82d4,#06b6d4)" title="Ocean"></div>
+        <div class="theme-opt" data-theme="forest" style="background:linear-gradient(135deg,#22c55e,#84cc16)" title="Forest"></div>
+        <div class="theme-opt" data-theme="sunset" style="background:linear-gradient(135deg,#f59e0b,#ef4444)" title="Sunset"></div>
+        <div class="theme-opt" data-theme="minimal" style="background:var(--border)" title="Minimal"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" style="flex:1">Back</button>
+      <button class="btn btn-primary" style="flex:2">Next →</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="screen-create-step2" class="screen">
+  <div class="form-card">
+    <div class="step-dots">
+      <div class="step-dot"></div>
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+    </div>
+    <h2>Set Up Your Profile</h2>
+    <div class="form-group">
+      <label>Display Name</label>
+      <input id="inp-creator-name" type="text" />
+      <div id="err-creator-name" class="form-error" style="display:none">Please enter a display name (2–20 chars)</div>
+    </div>
+    <div class="form-group">
+      <label>Pick Your Avatar</label>
+      <div class="avatar-grid" id="avatar-picker-create">
+        
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Starting Mood (1–10)</label>
+      <div class="mood-row">
+        <input type="range" id="create-mood" />
+        <span class="mood-val" id="create-mood-val">7</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" style="flex:1">Back</button>
+      <button class="btn btn-primary" style="flex:2">Next →</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="screen-create-step3" class="screen">
+  <div class="form-card">
+    <div class="step-dots">
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot active"></div>
+    </div>
+    <h2>Your Squad is Ready!</h2>
+    <p style="color:var(--muted);font-size:13px">Share this code with your coworkers so they can join.</p>
+    <div class="code-display" id="code-display-box" title="Click to copy">
+      <div class="code-val" id="code-display-val">------</div>
+      <p>Click to copy · Expires in 24h</p>
+    </div>
+    <div class="form-group">
+      <label>Your Starting Status</label>
+      <select id="inp-creator-status">
+        <option>Just arrived</option>
+        <option>Sipping coffee</option>
+        <option>In focus mode</option>
+        <option>Ready to collaborate</option>
+        <option>Heads-down coding</option>
+        <option>Available</option>
+        <option>In a meeting</option>
+        <option>Ready for lunch</option>
+      </select>
+    </div>
+    <button class="btn btn-primary">Enter Squad →</button>
+  </div>
+</div>
+
+
+<div id="screen-join" class="screen">
+  <div class="form-card">
+    <h2>Join a Squad</h2>
+    <div class="form-group">
+      <label>Enter Join Code</label>
+      <input id="inp-join-code" type="text" style="text-transform:uppercase;letter-spacing:4px;font-size:20px;font-weight:700" />
+      <div id="err-join-code" class="form-error" style="display:none">Code not found. Check with your squad leader.</div>
+    </div>
+    <div class="form-group">
+      <label>Display Name</label>
+      <input id="inp-join-name" type="text" />
+      <div id="err-join-name" class="form-error" style="display:none">Please enter a display name (2–20 chars)</div>
+    </div>
+    <div class="form-group">
+      <label>Pick Your Avatar</label>
+      <div class="avatar-grid" id="avatar-picker-join"></div>
+    </div>
+    <div class="form-group">
+      <label>Starting Mood (1–10)</label>
+      <div class="mood-row">
+        <input type="range" id="join-mood" />
+        <span class="mood-val" id="join-mood-val">7</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Status</label>
+      <select id="inp-join-status">
+        <option>Just arrived</option>
+        <option>Sipping coffee</option>
+        <option>In focus mode</option>
+        <option>Ready to collaborate</option>
+        <option>Heads-down coding</option>
+        <option>Available</option>
+        <option>In a meeting</option>
+        <option>Ready for lunch</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" style="flex:1">Back</button>
+      <button class="btn btn-accent2" style="flex:2">Join Squad →</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="screen-dashboard" class="screen">
+  <div class="dash-header">
+    <div class="logo">BOB, WYD?</div>
+    <div class="squad-badge" id="hdr-squad-name">Squad</div>
+    <div class="squad-code-badge" id="hdr-squad-code" title="Click to copy join code">------</div>
+    <div class="header-right">
+      <div class="me-badge">
+        <span class="avatar-sm" id="hdr-me-avatar">?</span>
+        <span id="hdr-me-name">You</span>
+      </div>
+      <button class="btn btn-ghost btn-sm">Leave</button>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    
+    <div class="dash-main">
+
+      
+      <div class="my-card">
+        <div class="my-card-top">
+          <div class="my-avatar" id="my-avatar-display">?</div>
+          <div class="my-info">
+            <div class="my-name" id="my-name-display">You</div>
+            <div class="my-status-text" id="my-status-display">Available</div>
+          </div>
+          <span class="online-badge">LIVE</span>
+        </div>
+        <div class="my-controls">
+          <div class="control-block">
+            <label>Status</label>
+            <select id="my-status-sel">
+              <option>Just arrived</option>
+              <option>Sipping coffee</option>
+              <option>In focus mode</option>
+              <option>Ready to collaborate</option>
+              <option>Heads-down coding</option>
+              <option>Available</option>
+              <option>In a meeting</option>
+              <option>Ready for lunch</option>
+              <option>Deep work — do not disturb</option>
+              <option>Taking a break</option>
+            </select>
+          </div>
+          <div class="control-block">
+            <label>Mood</label>
+            <div class="mood-row">
+              <input type="range" id="my-mood-slider" />
+              <span class="mood-val" id="my-mood-val">7</span>
+            </div>
+          </div>
+        </div>
+        <div class="auto-status-strip">
+          <label>Quick Status</label>
+          <div class="auto-pills">
+            <span class="auto-pill">☕ Sipping coffee</span>
+            <span class="auto-pill">🍕 Ready for lunch</span>
+            <span class="auto-pill">🎯 Deep work</span>
+            <span class="auto-pill">📅 In a meeting</span>
+            <span class="auto-pill">🌿 Taking a break</span>
+            <span class="auto-pill">👋 Just arrived</span>
+          </div>
+        </div>
+      </div>
+
+      
+      <div id="spotify-section">
+        <div class="section-header">
+          <div class="section-title">Now Playing</div>
+          <button class="btn btn-ghost btn-sm">
+            <span id="spotify-btn-label">Connect Spotify</span>
+          </button>
+        </div>
+        <div class="spotify-card" id="spotify-card">
+          <div class="spotify-art" id="spotify-art">🎵</div>
+          <div class="spotify-info">
+            <div id="spotify-status-line">
+              <span class="spotify-none">Not connected — connect Spotify to share what you're listening to</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div>
+        <div class="section-header">
+          <div class="section-title">Squad Members</div>
+          <span class="online-badge" id="member-count-badge">1 online</span>
+        </div>
+        <input type="text" class="search-bar" id="coworker-search" />
+        <div class="coworker-grid" id="coworker-grid"></div>
+      </div>
+
+    </div>
+
+    
+    <div class="dash-sidebar">
+      
+      <div class="poll-card">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="poll-title">Daily Poll</div>
+          <span style="font-size:10px;color:var(--muted)">resets midnight</span>
+        </div>
+        <div class="poll-question" id="poll-question"></div>
+        <div class="poll-opts" id="poll-opts"></div>
+        <div id="poll-voted-label" class="poll-voted-label" style="display:none">You voted! Results update live.</div>
+      </div>
+
+      
+      <div class="section-block">
+        <div class="section-title">Online Now</div>
+        <div class="member-list" id="sidebar-member-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+
+<div style="text-align:center;font-size:11px;color:#57606a;padding:12px;border-top:1px solid #2d2d4e;opacity:0.5;position:fixed;bottom:0;width:100%;pointer-events:none;background:var(--bg)">Made with IBM Bob</div>
+</body>
+</html>

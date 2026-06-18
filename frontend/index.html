@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BOB, WYD?</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #dce9f7;
+    --bg2:       #e8f2fb;
+    --surface:   #ffffff;
+    --surface2:  #f0f5fc;
+    --border:    #d4e2f0;
+    --text:      #1a1a2e;
+    --muted:     #7a8faa;
+    --accent:    #5b5bd6;
+    --accent-lt: #eeeeff;
+    --green:     #22c55e;
+    --green-lt:  #dcfce7;
+    --yellow:    #f59e0b;
+    --yellow-lt: #fef9c3;
+    --red:       #ef4444;
+    --red-lt:    #fee2e2;
+    --pink:      #f472b6;
+    --pink-lt:   #fce7f3;
+    --blue:      #3b82f6;
+    --blue-lt:   #dbeafe;
+    --radius:    20px;
+    --radius-sm: 12px;
+    --radius-pill: 999px;
+    --shadow:    0 4px 24px rgba(91,91,214,0.10);
+    --shadow-sm: 0 2px 8px rgba(91,91,214,0.08);
+  }
+
+  body {
+    font-family: "Nunito", -apple-system, "Segoe UI", system-ui, sans-serif;
+    background: linear-gradient(160deg, #c9dff5 0%, #dce9f7 40%, #e8f0fb 100%);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; }
+
+  /* ── SHARED BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px; border: none; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+    font-family: inherit; text-decoration: none;
+    border-radius: var(--radius-pill);
+    padding: 12px 28px;
+  }
+  .btn:active  { transform: scale(0.97); }
+  .btn:hover   { opacity: 0.88; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 16px rgba(91,91,214,0.3); }
+  .btn-soft    { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+  .btn-green   { background: var(--green);  color: #fff; box-shadow: 0 4px 16px rgba(34,197,94,0.25); }
+  .btn-yellow  { background: #f5e178; color: #5a4500; box-shadow: 0 4px 16px rgba(245,225,120,0.4); }
+  .btn-ghost   { background: transparent; color: var(--muted); border: 2px solid var(--border); }
+  .btn-sm      { padding: 7px 18px; font-size: 13px; }
+  .btn-danger  { background: var(--red-lt); color: var(--red); }
+
+  /* ── SHARED FORM ELEMENTS ── */
+  .form-input {
+    background: var(--surface); border: 2px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px 16px;
+    color: var(--text); font-size: 15px; font-family: inherit;
+    outline: none; width: 100%; transition: border-color 0.15s;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input::placeholder { color: var(--muted); }
+  .form-label {
+    font-size: 11px; font-weight: 800; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px;
+    display: block;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-error { color: var(--red); font-size: 12px; font-weight: 600; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 28px;
+  }
+
+  /* ── PILL BADGE ── */
+  .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    border-radius: var(--radius-pill); padding: 5px 14px;
+    font-size: 13px; font-weight: 700;
+  }
+  .pill-accent  { background: var(--accent-lt); color: var(--accent); }
+  .pill-green   { background: var(--green-lt);  color: #15803d; }
+  .pill-yellow  { background: var(--yellow-lt); color: #92400e; }
+  .pill-pink    { background: var(--pink-lt);   color: #be185d; }
+  .pill-blue    { background: var(--blue-lt);   color: #1d4ed8; }
+  .pill-muted   { background: var(--surface2);  color: var(--muted); }
+
+  /* ── AVATAR FACES (big SVG-style emoji circles) ── */
+  .avatar-face {
+    width: 100px; height: 100px; border-radius: 50%;
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 56px; flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border: 3px solid rgba(255,255,255,0.9);
+    transition: transform 0.15s;
+    user-select: none;
+  }
+  .avatar-face:hover { transform: scale(1.06); }
+  .avatar-face.me { border-color: var(--accent); border-width: 3px; }
+  .avatar-face.sm {
+    width: 56px; height: 56px; font-size: 30px;
+  }
+  .avatar-face.xs {
+    width: 38px; height: 38px; font-size: 20px;
+    box-shadow: none; border-width: 2px;
+  }
+
+  /* ── SPINNER ── */
+  .spinner {
+    width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin 0.7s linear infinite; display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--text); color: #fff;
+    padding: 11px 24px; border-radius: var(--radius-pill);
+    font-size: 14px; font-weight: 700; z-index: 9999;
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+    pointer-events: none; box-shadow: var(--shadow);
+  }
+  .toast.show   { transform: translateX(-50%) translateY(0); }
+  .toast.error  { background: var(--red); }
+  .toast.success{ background: var(--green); }
+
+  /* ── STEP DOTS ── */
+  .step-dots { display: flex; gap: 8px; justify-content: center; }
+  .step-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border); transition: all 0.2s;
+  }
+  .step-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+
+  /* ──────────────────────────────────────────
+     LANDING
+  ────────────────────────────────────────── */
+  #screen-landing {
+    flex-direction: column; align-items: center;
+    justify-content: center; gap: 28px; padding: 48px 24px;
+  }
+  .landing-hero { text-align: center; }
+  .landing-hero h1 {
+    font-size: 56px; font-weight: 900; letter-spacing: -2px;
+    color: var(--text); line-height: 1.1;
+  }
+  .landing-hero h1 span { color: var(--accent); }
+  .landing-hero p { color: var(--muted); font-size: 17px; margin-top: 10px; font-weight: 600; }
+  .landing-avatars {
+    display: flex; gap: -8px; justify-content: center;
+  }
+  .landing-avatars .avatar-face {
+    margin-left: -12px; border: 3px solid var(--bg);
+  }
+  .landing-avatars .avatar-face:first-child { margin-left: 0; }
+  .landing-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  .landing-features {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    justify-content: center; max-width: 420px;
+  }
+  .feat-chip {
+    background: var(--surface); border-radius: var(--radius-pill);
+    padding: 5px 14px; font-size: 12px; font-weight: 700;
+    color: var(--muted); box-shadow: var(--shadow-sm);
+  }
+
+  /* ──────────────────────────────────────────
+     FORM SCREENS (create / join)
+  ────────────────────────────────────────── */
+  .form-screen {
+    flex-direction: column; align-items: center;
+    justify-content: center; padding: 40px 20px;
+  }
+  .form-card {
+    background: var(--surface); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 32px;
+    width: 100%; max-width: 440px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .form-card h2 { font-size: 24px; font-weight: 900; color: var(--text); }
+
+  /* avatar picker */
+  .avatar-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+  .avatar-pick {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--surface2); border: 3px solid transparent;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; cursor: pointer;
+    transition: border-color 0.15s, transform 0.1s;
+  }
+  .avatar-pick:hover  { transform: scale(1.1); }
+  .avatar-pick.sel    { border-color: var(--accent); background: var(--accent-lt); }
+
+  /* theme picker */
+  .theme-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+  .theme-swatch {
+    width: 44px; height: 44px; border-radius: 12px;
+    cursor: pointer; border: 3px solid transparent;
+    transition: border-color 0.15s, transform 0.1s;
+  }
+  .theme-swatch:hover  { transform: scale(1.1); }
+  .theme-swatch.sel    { border-color: var(--accent); }
+
+  /* mood slider */
+  .mood-row { display: flex; align-items: center; gap: 12px; }
+  .mood-row input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; height: 6px; }
+  .mood-num {
+    font-size: 22px; font-weight: 900; min-width: 32px;
+    text-align: center; color: var(--accent);
+  }
+
+  /* code display */
+  .code-box {
+    background: var(--accent-lt); border: 2px dashed var(--accent);
+    border-radius: var(--radius); padding: 22px; text-align: center; cursor: pointer;
+  }
+  .code-box .code-val {
+    font-size: 42px; font-weight: 900; letter-spacing: 10px; color: var(--accent);
+    font-family: "Courier New", monospace;
+  }
+  .code-box p { color: var(--muted); font-size: 12px; font-weight: 600; margin-top: 6px; }
+
+  /* ──────────────────────────────────────────
+     DASHBOARD
+  ────────────────────────────────────────── */
+  #screen-dashboard { flex-direction: column; min-height: 100vh; }
+
+  /* header */
+  .dash-header {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 14px 24px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .dash-header .logo {
+    font-size: 20px; font-weight: 900; color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+  .hdr-squad-pill {
+    background: var(--surface); border-radius: var(--radius-pill);
+    padding: 7px 20px; font-size: 18px; font-weight: 900;
+    color: var(--text); box-shadow: var(--shadow-sm);
+  }
+  .hdr-code-pill {
+    background: var(--accent); color: #fff;
+    border-radius: var(--radius-pill); padding: 5px 14px;
+    font-size: 13px; font-weight: 800; letter-spacing: 1px;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .hdr-code-pill:hover { opacity: 0.85; }
+  .hdr-count {
+    font-size: 14px; font-weight: 700; color: var(--muted);
+  }
+  .hdr-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .me-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface); border-radius: var(--radius-pill);
+    padding: 5px 14px 5px 6px; box-shadow: var(--shadow-sm);
+    font-size: 13px; font-weight: 700;
+  }
+  .ws-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--muted); flex-shrink: 0; transition: background 0.3s;
+  }
+  .ws-dot.connected { background: var(--green); }
+  .ws-dot.error     { background: var(--red); }
+
+  /* layout */
+  .dash-body {
+    display: grid; grid-template-columns: 1fr 290px; flex: 1;
+    overflow: hidden; max-height: calc(100vh - 61px);
+  }
+  @media (max-width: 700px) {
+    .dash-body { grid-template-columns: 1fr; max-height: none; overflow: visible; }
+    .dash-sidebar { border-left: none; border-top: 2px solid var(--border); }
+  }
+  .dash-main    { overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 24px; }
+  .dash-sidebar { overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; border-left: 2px solid var(--border); }
+
+  /* expiry banner */
+  .expires-banner {
+    background: var(--surface); border-radius: var(--radius-sm);
+    padding: 10px 18px; font-size: 13px; font-weight: 700; color: var(--muted);
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    box-shadow: var(--shadow-sm);
+  }
+  .expires-banner.warn { background: var(--yellow-lt); color: #92400e; }
+
+  /* ── MY CARD ── */
+  .my-card {
+    background: var(--surface); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 22px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .my-card-top { display: flex; align-items: center; gap: 16px; }
+  .my-info .my-name { font-size: 19px; font-weight: 900; }
+  .my-info .my-status-txt { color: var(--muted); font-size: 13px; font-weight: 600; }
+  .live-badge {
+    background: var(--green-lt); color: #15803d;
+    border-radius: var(--radius-pill); padding: 3px 12px;
+    font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .my-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ctrl-block { display: flex; flex-direction: column; gap: 6px; }
+  .ctrl-block select {
+    background: var(--surface2); border: 2px solid var(--border);
+    border-radius: var(--radius-sm); padding: 9px 12px;
+    color: var(--text); font-size: 13px; font-family: inherit;
+    font-weight: 700; outline: none; cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .ctrl-block select:focus { border-color: var(--accent); }
+
+  /* quick status pills */
+  .quick-pills { display: flex; flex-wrap: wrap; gap: 7px; }
+  .quick-pill {
+    background: var(--surface2); border: 2px solid var(--border);
+    border-radius: var(--radius-pill); padding: 5px 14px;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, transform 0.1s; color: var(--text);
+  }
+  .quick-pill:hover { border-color: var(--accent); background: var(--accent-lt); transform: scale(1.04); }
+
+  /* ── MEMBER GRID ── */
+  .section-hdr {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+  }
+  .section-title {
+    font-size: 13px; font-weight: 800; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.8px;
+  }
+  .search-bar {
+    width: 100%; background: var(--surface); border: 2px solid var(--border);
+    border-radius: var(--radius-pill); padding: 10px 18px;
+    color: var(--text); font-size: 14px; font-family: inherit;
+    font-weight: 600; outline: none; margin-bottom: 16px;
+    transition: border-color 0.15s; box-shadow: var(--shadow-sm);
+  }
+  .search-bar:focus { border-color: var(--accent); }
+  .search-bar::placeholder { color: var(--muted); }
+
+  .member-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 16px;
+  }
+  .member-card {
+    background: var(--surface); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); padding: 20px 14px 16px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    transition: box-shadow 0.2s, transform 0.2s; cursor: default;
+    position: relative;
+  }
+  .member-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .member-card .mc-name {
+    font-size: 14px; font-weight: 800; text-align: center;
+    color: var(--text);
+  }
+  .member-card .mc-status {
+    background: var(--surface2); border-radius: var(--radius-pill);
+    padding: 4px 12px; font-size: 11px; font-weight: 700; color: var(--text);
+    display: flex; align-items: center; gap: 4px; text-align: center;
+    border: 1px solid var(--border); cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .member-card .mc-status:hover { border-color: var(--accent); }
+  .member-card .mc-status .chevron { color: var(--muted); font-size: 10px; }
+  .mood-bar-wrap { width: 100%; height: 5px; background: var(--surface2); border-radius: 999px; overflow: hidden; }
+  .mood-bar-fill { height: 100%; border-radius: 999px; transition: width 0.5s; }
+  .member-card .mc-spotify {
+    font-size: 10px; font-weight: 700; color: #15803d;
+    text-align: center; white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; max-width: 100%;
+    background: var(--green-lt); border-radius: var(--radius-pill); padding: 2px 8px;
+  }
+  .me-tag {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--accent-lt); color: var(--accent);
+    border-radius: var(--radius-pill); padding: 2px 8px;
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+  }
+
+  /* grouped sections */
+  .group-block {
+    background: var(--surface2); border-radius: var(--radius);
+    padding: 20px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .group-title {
+    font-size: 18px; font-weight: 900; color: var(--text); text-align: center;
+  }
+  .group-action {
+    display: flex; justify-content: center;
+  }
+
+  /* ── SPOTIFY CARD ── */
+  .spotify-wrap {
+    background: var(--surface); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 18px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .spotify-inner {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .spotify-art {
+    width: 58px; height: 58px; border-radius: var(--radius-sm);
+    background: var(--surface2); display: flex; align-items: center;
+    justify-content: center; font-size: 30px; flex-shrink: 0;
+    overflow: hidden; box-shadow: var(--shadow-sm);
+  }
+  .spotify-art img { width: 100%; height: 100%; object-fit: cover; }
+  .spotify-info { flex: 1; min-width: 0; }
+  .spotify-track {
+    font-size: 15px; font-weight: 800; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; color: var(--text);
+  }
+  .spotify-artist { font-size: 12px; font-weight: 700; color: #15803d; }
+  .spotify-none   { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .spotify-progress {
+    height: 4px; background: var(--surface2); border-radius: 999px; overflow: hidden;
+  }
+  .spotify-progress-fill {
+    height: 100%; background: #1db954; border-radius: 999px; transition: width 1s linear;
+  }
+  .now-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: #1db954; margin-right: 5px; animation: pulse 1.4s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.75)} }
+
+  /* ── SIDEBAR ── */
+  /* poll */
+  .poll-card {
+    background: var(--surface); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); padding: 18px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .poll-card-hdr { display: flex; align-items: center; justify-content: space-between; }
+  .poll-ttl  { font-size: 14px; font-weight: 900; }
+  .poll-sub  { font-size: 10px; color: var(--muted); font-weight: 700; }
+  .poll-q    { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.5; }
+  .poll-opts { display: flex; flex-direction: column; gap: 7px; }
+  .poll-opt {
+    background: var(--surface2); border: 2px solid var(--border);
+    border-radius: var(--radius-pill); padding: 9px 14px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    position: relative; overflow: hidden; display: flex;
+    align-items: center; justify-content: space-between;
+    transition: border-color 0.15s;
+  }
+  .poll-opt:hover { border-color: var(--accent); }
+  .poll-opt.my-vote { border-color: var(--accent); background: var(--accent-lt); }
+  .poll-opt-bar {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    border-radius: var(--radius-pill);
+    background: var(--accent-lt); transition: width 0.4s; z-index: 0;
+  }
+  .poll-opt span, .poll-pct { position: relative; z-index: 1; }
+  .poll-pct { font-size: 12px; font-weight: 800; color: var(--accent); }
+  .poll-voted-note { font-size: 11px; font-weight: 700; color: var(--accent); }
+
+  /* sidebar member list */
+  .sb-member-list { display: flex; flex-direction: column; gap: 10px; }
+  .sb-member {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface); border-radius: var(--radius-sm);
+    padding: 8px 12px; box-shadow: var(--shadow-sm);
+  }
+  .sb-member .sb-info { flex: 1; min-width: 0; }
+  .sb-member .sb-name { font-size: 13px; font-weight: 800; }
+  .sb-member .sb-status { font-size: 11px; font-weight: 600; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sb-mood-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* flash animation */
+  .flash { animation: flash 0.4s; }
+  @keyframes flash { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* inline select dropdown for member card */
+  .status-dropdown-wrap { position: relative; display: inline-flex; }
+  .status-dropdown-wrap select {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     LANDING
+══════════════════════════════════════════ -->
+<div id="screen-landing" class="screen active">
+  <div class="landing-hero">
+    <h1>BOB, <span>WYD?</span></h1>
+    <p>Your squad's real-time vibes, moods &amp; music.</p>
+  </div>
+  <div class="landing-avatars">
+    <div class="avatar-face">🐱</div>
+    <div class="avatar-face">🦊</div>
+    <div class="avatar-face">🐼</div>
+    <div class="avatar-face">🦁</div>
+    <div class="avatar-face">🐶</div>
+  </div>
+  <div class="landing-btns">
+    <button class="btn btn-primary" onclick="showScreen('create-step1')">+ Create Squad</button>
+    <button class="btn btn-soft"    onclick="showScreen('join')">Join Squad</button>
+  </div>
+  <div class="landing-features">
+    <span class="feat-chip">Real-time presence</span>
+    <span class="feat-chip">Spotify Now Playing</span>
+    <span class="feat-chip">Daily Poll</span>
+    <span class="feat-chip">Mood tracker</span>
+    <span class="feat-chip">6-digit codes</span>
+    <span class="feat-chip">24 h squads</span>
+  </div>
+  <p style="color:var(--muted);font-size:11px;font-weight:700">
+    Backend: <span id="api-url-display" style="color:var(--accent)"></span>
+  </p>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CREATE — STEP 1
+══════════════════════════════════════════ -->
+<div id="screen-create-step1" class="screen form-screen">
+  <div class="form-card">
+    <div class="step-dots">
+      <div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div>
+    </div>
+    <h2>Create Your Squad 🎉</h2>
+    <div class="form-group">
+      <label class="form-label">Squad Name</label>
+      <input id="inp-squad-name" class="form-input" type="text" placeholder="e.g. Design Team, Lunch Squad…" maxlength="30" />
+      <div id="err-squad-name" class="form-error" style="display:none">Please enter a squad name (3–30 chars)</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Choose a Theme</label>
+      <div class="theme-grid" id="theme-picker">
+        <div class="theme-swatch sel"  data-theme="sky"    style="background:linear-gradient(135deg,#c9dff5,#a5c8f0)" title="Sky"></div>
+        <div class="theme-swatch"      data-theme="lavender" style="background:linear-gradient(135deg,#c4b5fd,#a78bfa)" title="Lavender"></div>
+        <div class="theme-swatch"      data-theme="mint"   style="background:linear-gradient(135deg,#a7f3d0,#6ee7b7)" title="Mint"></div>
+        <div class="theme-swatch"      data-theme="peach"  style="background:linear-gradient(135deg,#fed7aa,#fca5a5)" title="Peach"></div>
+        <div class="theme-swatch"      data-theme="lemon"  style="background:linear-gradient(135deg,#fef08a,#fcd34d)" title="Lemon"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" style="flex:1" onclick="showScreen('landing')">Back</button>
+      <button class="btn btn-primary" style="flex:2" onclick="createStep1Next()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CREATE — STEP 2
+══════════════════════════════════════════ -->
+<div id="screen-create-step2" class="screen form-screen">
+  <div class="form-card">
+    <div class="step-dots">
+      <div class="step-dot"></div><div class="step-dot active"></div><div class="step-dot"></div>
+    </div>
+    <h2>Your Profile 😊</h2>
+    <div class="form-group">
+      <label class="form-label">Display Name</label>
+      <input id="inp-creator-name" class="form-input" type="text" placeholder="e.g. Alice, Bob…" maxlength="20" />
+      <div id="err-creator-name" class="form-error" style="display:none">Please enter a name (2–20 chars)</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Pick Your Avatar</label>
+      <div class="avatar-grid" id="avatar-picker-create"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Starting Mood (1–10)</label>
+      <div class="mood-row">
+        <input type="range" id="create-mood" min="1" max="10" value="7"
+               oninput="document.getElementById('create-mood-val').textContent=this.value" />
+        <span class="mood-num" id="create-mood-val">7</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Starting Status</label>
+      <select id="inp-creator-status" class="form-input">
+        <option>Just arrived</option><option>Sipping coffee</option>
+        <option>In focus mode</option><option>Ready to collaborate</option>
+        <option>Heads-down coding</option><option>Available</option>
+        <option>In a meeting</option><option>Ready for lunch</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" style="flex:1" onclick="showScreen('create-step1')">Back</button>
+      <button class="btn btn-primary" style="flex:2" id="btn-create-submit" onclick="submitCreateSquad()">Create Squad →</button>
+    </div>
+    <div id="err-create-api" class="form-error" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CREATE — STEP 3 (code reveal)
+══════════════════════════════════════════ -->
+<div id="screen-create-step3" class="screen form-screen">
+  <div class="form-card">
+    <div class="step-dots">
+      <div class="step-dot"></div><div class="step-dot"></div><div class="step-dot active"></div>
+    </div>
+    <h2>Squad is Ready! 🚀</h2>
+    <p style="color:var(--muted);font-size:14px;font-weight:600">Share this code with your coworkers.</p>
+    <div class="code-box" onclick="copyCode()" title="Click to copy">
+      <div class="code-val" id="code-display-val">------</div>
+      <p>Click to copy · Expires in 24 hours</p>
+    </div>
+    <button class="btn btn-primary" onclick="enterDashboard()">Enter Squad →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     JOIN
+══════════════════════════════════════════ -->
+<div id="screen-join" class="screen form-screen">
+  <div class="form-card">
+    <h2>Join a Squad 👋</h2>
+    <div class="form-group">
+      <label class="form-label">Enter Join Code</label>
+      <input id="inp-join-code" class="form-input" type="text" placeholder="B7X4Q2" maxlength="6"
+             style="text-transform:uppercase;letter-spacing:6px;font-size:22px;font-weight:900;text-align:center"
+             oninput="this.value=this.value.toUpperCase()" />
+      <div id="err-join-code" class="form-error" style="display:none"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Display Name</label>
+      <input id="inp-join-name" class="form-input" type="text" placeholder="e.g. Charlie, Dana…" maxlength="20" />
+      <div id="err-join-name" class="form-error" style="display:none">Please enter a name (2–20 chars)</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Pick Your Avatar</label>
+      <div class="avatar-grid" id="avatar-picker-join"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Starting Mood (1–10)</label>
+      <div class="mood-row">
+        <input type="range" id="join-mood" min="1" max="10" value="7"
+               oninput="document.getElementById('join-mood-val').textContent=this.value" />
+        <span class="mood-num" id="join-mood-val">7</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <select id="inp-join-status" class="form-input">
+        <option>Just arrived</option><option>Sipping coffee</option>
+        <option>In focus mode</option><option>Ready to collaborate</option>
+        <option>Heads-down coding</option><option>Available</option>
+        <option>In a meeting</option><option>Ready for lunch</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" style="flex:1" onclick="showScreen('landing')">Back</button>
+      <button class="btn btn-primary" style="flex:2" id="btn-join-submit" onclick="submitJoinSquad()">Join Squad →</button>
+    </div>
+    <div id="err-join-api" class="form-error" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DASHBOARD
+══════════════════════════════════════════ -->
+<div id="screen-dashboard" class="screen">
+
+  <!-- Header -->
+  <div class="dash-header">
+    <div class="logo">BOB, WYD?</div>
+    <div class="hdr-squad-pill" id="hdr-squad-name">Squad</div>
+    <div class="hdr-code-pill"  id="hdr-squad-code" onclick="copyCode()" title="Click to copy">------</div>
+    <span class="hdr-count" id="hdr-count"></span>
+    <div class="ws-dot" id="ws-indicator" title="Connecting…"></div>
+    <div class="hdr-right">
+      <div class="me-pill">
+        <span id="hdr-me-avatar" style="font-size:22px">?</span>
+        <span id="hdr-me-name" style="font-weight:800">You</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="leaveSquad()">Leave ✕</button>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    <!-- ── MAIN ── -->
+    <div class="dash-main">
+
+      <!-- Expiry banner -->
+      <div class="expires-banner" id="expires-banner">
+        <span id="expires-text"></span>
+        <button class="btn btn-sm btn-ghost" id="btn-extend" style="display:none" onclick="extendSquad()">Extend 24h</button>
+      </div>
+
+      <!-- My Card -->
+      <div class="my-card">
+        <div class="my-card-top">
+          <div class="avatar-face me" id="my-avatar-display">?</div>
+          <div class="my-info" style="flex:1">
+            <div class="my-name" id="my-name-display">You</div>
+            <div class="my-status-txt" id="my-status-display">Available</div>
+          </div>
+          <span class="live-badge">● LIVE</span>
+        </div>
+        <div class="my-controls">
+          <div class="ctrl-block">
+            <label class="form-label">Status</label>
+            <select id="my-status-sel" onchange="updateMyStatus()">
+              <option>Just arrived</option>
+              <option>Sipping coffee</option>
+              <option>In focus mode</option>
+              <option>Ready to collaborate</option>
+              <option>Heads-down coding</option>
+              <option>Available</option>
+              <option>In a meeting</option>
+              <option>Ready for lunch</option>
+              <option>Deep work — do not disturb</option>
+              <option>Taking a break</option>
+            </select>
+          </div>
+          <div class="ctrl-block">
+            <label class="form-label">Mood</label>
+            <div class="mood-row">
+              <input type="range" id="my-mood-slider" min="1" max="10" value="7"
+                     oninput="previewMood(this.value)" onchange="updateMyMood(this.value)" />
+              <span class="mood-num" id="my-mood-val">7</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="form-label">Quick Status</label>
+          <div class="quick-pills">
+            <span class="quick-pill" onclick="quickStatus('Sipping coffee')">☕ Coffee</span>
+            <span class="quick-pill" onclick="quickStatus('Ready for lunch')">🍕 Lunch</span>
+            <span class="quick-pill" onclick="quickStatus('Deep work — do not disturb')">🎯 Deep work</span>
+            <span class="quick-pill" onclick="quickStatus('In a meeting')">📅 Meeting</span>
+            <span class="quick-pill" onclick="quickStatus('Taking a break')">🌿 Break</span>
+            <span class="quick-pill" onclick="quickStatus('Just arrived')">👋 Just arrived</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spotify -->
+      <div class="spotify-wrap">
+        <div class="section-hdr">
+          <div class="section-title">🎵 Now Playing</div>
+          <button class="btn btn-sm btn-soft" onclick="toggleSpotify()">
+            <span id="spotify-btn-label">Connect Spotify</span>
+          </button>
+        </div>
+        <div class="spotify-inner">
+          <div class="spotify-art" id="spotify-art">🎵</div>
+          <div class="spotify-info" id="spotify-status-line">
+            <span class="spotify-none">Not connected — connect Spotify to share what you're listening to</span>
+          </div>
+        </div>
+        <div class="spotify-progress" id="spotify-progress" style="display:none">
+          <div class="spotify-progress-fill" id="spotify-progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Squad Members -->
+      <div>
+        <div class="section-hdr">
+          <div class="section-title">Squad Members</div>
+          <span class="pill pill-green" id="member-count-badge">1 online</span>
+        </div>
+        <input type="text" class="search-bar" id="coworker-search"
+               placeholder="🔍  Search by name or status…" oninput="renderCoworkers()" />
+        <!-- members rendered here by renderCoworkers() -->
+        <div id="coworker-grid"></div>
+      </div>
+
+    </div>
+
+    <!-- ── SIDEBAR ── -->
+    <div class="dash-sidebar">
+
+      <!-- Poll -->
+      <div class="poll-card">
+        <div class="poll-card-hdr">
+          <div class="poll-ttl">📊 Daily Poll</div>
+          <span class="poll-sub">resets midnight</span>
+        </div>
+        <div class="poll-q" id="poll-question"></div>
+        <div class="poll-opts" id="poll-opts"></div>
+        <div id="poll-voted-note" class="poll-voted-note" style="display:none">✅ You voted! Results update live.</div>
+      </div>
+
+      <!-- Online Now -->
+      <div>
+        <div class="section-title" style="margin-bottom:10px">Online Now</div>
+        <div class="sb-member-list" id="sidebar-member-list"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════════════
+const API_BASE = 'http://localhost:3001';
+const WS_BASE  = 'ws://localhost:3001';
+document.getElementById('api-url-display').textContent = API_BASE;
+
+// ═══════════════════════════════════════════════════════════
+//  CONSTANTS
+// ═══════════════════════════════════════════════════════════
+const AVATARS = ['🐱','🐶','🦊','🐸','🐼','🐨','🦁','🐯','🐮','🐷','🦄','🐙','🦋','🐬','🦅','🦉','🐲','🌸'];
+
+const STATUS_EMOJI = {
+  'Just arrived':                '👋',
+  'Sipping coffee':              '☕',
+  'In focus mode':               '🎯',
+  'Ready to collaborate':        '🤝',
+  'Heads-down coding':           '💻',
+  'Available':                   '🟢',
+  'In a meeting':                '📅',
+  'Ready for lunch':             '🍕',
+  'Deep work — do not disturb':  '🎯',
+  'Taking a break':              '🌿',
+};
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let state = {
+  squadCode: '', squadName: '', squadTheme: 'sky', expiresAt: null,
+  memberId: '', me: null, members: [],
+  poll: null, pollVotes: [], myVote: -1,
+  selectedAvatarCreate: AVATARS[0],
+  selectedAvatarJoin:   AVATARS[0],
+  selectedTheme: 'sky',
+  pendingSquadName: '', pendingTheme: 'sky',
+};
+
+let ws = null;
+let spotifyConnected = false;
+let spotifyPollTimer = null;
+let expiryInterval   = null;
+
+// ═══════════════════════════════════════════════════════════
+//  SCREEN
+// ═══════════════════════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + name);
+  if (el) el.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PICKERS
+// ═══════════════════════════════════════════════════════════
+function buildAvatarPicker(containerId, stateKey) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  state[stateKey] = AVATARS[0];
+  AVATARS.forEach((a, i) => {
+    const d = document.createElement('div');
+    d.className = 'avatar-pick' + (i === 0 ? ' sel' : '');
+    d.textContent = a;
+    d.onclick = () => {
+      el.querySelectorAll('.avatar-pick').forEach(x => x.classList.remove('sel'));
+      d.classList.add('sel');
+      state[stateKey] = a;
+    };
+    el.appendChild(d);
+  });
+}
+
+document.querySelectorAll('#theme-picker .theme-swatch').forEach(el => {
+  el.onclick = () => {
+    document.querySelectorAll('#theme-picker .theme-swatch').forEach(x => x.classList.remove('sel'));
+    el.classList.add('sel');
+    state.selectedTheme = el.dataset.theme;
+  };
+});
+
+// ═══════════════════════════════════════════════════════════
+//  CREATE FLOW
+// ═══════════════════════════════════════════════════════════
+function createStep1Next() {
+  const name = document.getElementById('inp-squad-name').value.trim();
+  const err  = document.getElementById('err-squad-name');
+  if (name.length < 3 || name.length > 30) { err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  state.pendingSquadName = name;
+  state.pendingTheme = document.querySelector('#theme-picker .theme-swatch.sel')?.dataset.theme || 'sky';
+  buildAvatarPicker('avatar-picker-create', 'selectedAvatarCreate');
+  showScreen('create-step2');
+}
+
+async function submitCreateSquad() {
+  const name    = document.getElementById('inp-creator-name').value.trim();
+  const errName = document.getElementById('err-creator-name');
+  const errApi  = document.getElementById('err-create-api');
+  errName.style.display = 'none'; errApi.style.display = 'none';
+  if (name.length < 2 || name.length > 20) { errName.style.display = 'block'; return; }
+
+  const btn = document.getElementById('btn-create-submit');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Creating…';
+
+  try {
+    const res = await fetch(`${API_BASE}/squads`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: state.pendingSquadName, theme: state.pendingTheme,
+        creatorName: name, creatorAvatar: state.selectedAvatarCreate,
+        creatorMood: parseInt(document.getElementById('create-mood').value),
+        creatorStatus: document.getElementById('inp-creator-status').value,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to create squad');
+    state.squadCode = data.squad.code; state.squadName = data.squad.name;
+    state.squadTheme = data.squad.theme; state.expiresAt = data.squad.expiresAt;
+    state.memberId = data.memberId; state.poll = data.squad.poll;
+    state.pollVotes = data.squad.pollVotes; state.myVote = -1;
+    document.getElementById('code-display-val').textContent = state.squadCode;
+    showScreen('create-step3');
+  } catch (e) {
+    errApi.textContent = e.message; errApi.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create Squad →';
+  }
+}
+
+function enterDashboard() { initDashboard(); }
+
+// ═══════════════════════════════════════════════════════════
+//  JOIN FLOW
+// ═══════════════════════════════════════════════════════════
+async function submitJoinSquad() {
+  const code    = document.getElementById('inp-join-code').value.trim().toUpperCase();
+  const name    = document.getElementById('inp-join-name').value.trim();
+  const errCode = document.getElementById('err-join-code');
+  const errName = document.getElementById('err-join-name');
+  const errApi  = document.getElementById('err-join-api');
+  errCode.style.display = 'none'; errName.style.display = 'none'; errApi.style.display = 'none';
+
+  if (!/^[A-Z0-9]{6}$/.test(code)) {
+    errCode.textContent = 'Enter a valid 6-character code.'; errCode.style.display = 'block'; return;
+  }
+  if (name.length < 2 || name.length > 20) { errName.style.display = 'block'; return; }
+
+  const btn = document.getElementById('btn-join-submit');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Joining…';
+
+  try {
+    const res = await fetch(`${API_BASE}/squads/${code}/join`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name, avatar: state.selectedAvatarJoin,
+        mood: parseInt(document.getElementById('join-mood').value),
+        status: document.getElementById('inp-join-status').value,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      const msg = res.status === 404 ? 'Code not found. Check with your squad leader.'
+                : res.status === 410 ? 'This squad has ended.' : (data.error || 'Failed to join');
+      errCode.textContent = msg; errCode.style.display = 'block'; return;
+    }
+    state.squadCode = data.squad.code; state.squadName = data.squad.name;
+    state.squadTheme = data.squad.theme; state.expiresAt = data.squad.expiresAt;
+    state.memberId = data.memberId; state.members = data.squad.members;
+    state.poll = data.squad.poll; state.pollVotes = data.squad.pollVotes; state.myVote = -1;
+    initDashboard();
+  } catch (e) {
+    errApi.textContent = e.message; errApi.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Join Squad →';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DASHBOARD INIT
+// ═══════════════════════════════════════════════════════════
+function initDashboard() {
+  document.getElementById('hdr-squad-name').textContent = state.squadName;
+  document.getElementById('hdr-squad-code').textContent = state.squadCode;
+  connectWS();
+  showScreen('dashboard');
+  startExpiryCountdown();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  WEBSOCKET
+// ═══════════════════════════════════════════════════════════
+function connectWS() {
+  if (ws) { ws.onclose = null; ws.close(); }
+  const dot = document.getElementById('ws-indicator');
+  dot.className = 'ws-dot'; dot.title = 'Connecting…';
+  ws = new WebSocket(WS_BASE);
+
+  ws.onopen = () => {
+    dot.className = 'ws-dot connected'; dot.title = 'Live';
+    ws.send(JSON.stringify({ type: 'SUBSCRIBE', code: state.squadCode, memberId: state.memberId }));
+    if (ws._pingInterval) clearInterval(ws._pingInterval);
+    ws._pingInterval = setInterval(() => {
+      if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'PING' }));
+    }, 25000);
+  };
+
+  ws.onmessage = (evt) => {
+    let msg; try { msg = JSON.parse(evt.data); } catch { return; }
+    if (msg.type === 'SQUAD_STATE')   applySquadState(msg.data);
+    else if (msg.type === 'SQUAD_EXTENDED') { state.expiresAt = msg.expiresAt; updateExpiryBanner(); showToast('Squad extended 24h! 🎉'); }
+    else if (msg.type === 'ERROR')    showToast(msg.error, true);
+  };
+
+  ws.onerror = () => { dot.className = 'ws-dot error'; dot.title = 'Connection error'; };
+  ws.onclose = () => {
+    dot.className = 'ws-dot'; dot.title = 'Reconnecting…';
+    if (ws._pingInterval) clearInterval(ws._pingInterval);
+    setTimeout(() => { if (state.squadCode) connectWS(); }, 3000);
+  };
+}
+
+// ═══════════════════════════════════════════════════════════
+//  APPLY STATE
+// ═══════════════════════════════════════════════════════════
+function applySquadState(squadData) {
+  state.members   = squadData.members || [];
+  state.poll      = squadData.poll;
+  state.pollVotes = squadData.pollVotes;
+  state.expiresAt = squadData.expiresAt;
+
+  const me = state.members.find(m => m.id === state.memberId);
+  if (me) {
+    state.me = me;
+    document.getElementById('hdr-me-avatar').textContent      = me.avatar;
+    document.getElementById('hdr-me-name').textContent        = me.name;
+    document.getElementById('my-avatar-display').textContent  = me.avatar;
+    document.getElementById('my-name-display').textContent    = me.name;
+    document.getElementById('my-status-display').textContent  = me.status;
+    document.getElementById('my-mood-val').textContent        = me.mood;
+    document.getElementById('my-mood-slider').value           = me.mood;
+    const sel = document.getElementById('my-status-sel');
+    for (let o of sel.options) { if (o.value === me.status) { o.selected = true; break; } }
+  }
+
+  document.getElementById('hdr-count').textContent = `${state.members.length}/${state.members.length} here`;
+  renderCoworkers();
+  renderPoll();
+  renderSidebarMembers();
+  updateExpiryBanner();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PRESENCE UPDATES
+// ═══════════════════════════════════════════════════════════
+function sendPresenceUpdate(fields) {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'PRESENCE_UPDATE', ...fields }));
+  } else {
+    fetch(`${API_BASE}/squads/${state.squadCode}/members/${state.memberId}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fields),
+    }).catch(console.error);
+  }
+}
+
+function updateMyStatus() {
+  const status = document.getElementById('my-status-sel').value;
+  document.getElementById('my-status-display').textContent = status;
+  sendPresenceUpdate({ status });
+  showToast('Status updated!');
+}
+
+function previewMood(v) { document.getElementById('my-mood-val').textContent = v; }
+
+let moodDebounce = null;
+function updateMyMood(v) {
+  document.getElementById('my-mood-val').textContent = v;
+  clearTimeout(moodDebounce);
+  moodDebounce = setTimeout(() => sendPresenceUpdate({ mood: parseInt(v) }), 300);
+}
+
+function quickStatus(s) {
+  document.getElementById('my-status-display').textContent = s;
+  const sel = document.getElementById('my-status-sel');
+  let found = false;
+  for (let o of sel.options) { if (o.value === s) { o.selected = true; found = true; break; } }
+  if (!found) { const opt = document.createElement('option'); opt.value = s; opt.textContent = s; opt.selected = true; sel.appendChild(opt); }
+  sendPresenceUpdate({ status: s });
+  showToast('Status: ' + s);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SPOTIFY
+// ═══════════════════════════════════════════════════════════
+function toggleSpotify() {
+  spotifyConnected ? disconnectSpotify() : connectSpotify();
+}
+
+function connectSpotify() {
+  const url   = `${API_BASE}/auth/spotify?memberId=${state.memberId}&squadCode=${state.squadCode}`;
+  const popup = window.open(url, 'spotify-auth', 'width=480,height=700,left=200,top=100');
+  if (!popup) { showToast('Allow pop-ups for this page to connect Spotify.', true); return; }
+
+  function onMsg(evt) {
+    if (evt.data?.type === 'SPOTIFY_CONNECTED') {
+      window.removeEventListener('message', onMsg);
+      spotifyConnected = true;
+      document.getElementById('spotify-btn-label').textContent = 'Disconnect';
+      showToast('Spotify connected! 🎵');
+      pollNowPlaying();
+      spotifyPollTimer = setInterval(pollNowPlaying, 15000);
+    } else if (evt.data?.type === 'SPOTIFY_ERROR') {
+      window.removeEventListener('message', onMsg);
+      showToast('Spotify: ' + (evt.data.error || 'error'), true);
+    }
+  }
+  window.addEventListener('message', onMsg);
+}
+
+async function disconnectSpotify() {
+  clearInterval(spotifyPollTimer);
+  spotifyConnected = false;
+  document.getElementById('spotify-btn-label').textContent = 'Connect Spotify';
+  renderMySpotify(null);
+  sendPresenceUpdate({ spotify: null });
+  try { await fetch(`${API_BASE}/auth/spotify?memberId=${state.memberId}&squadCode=${state.squadCode}`, { method: 'DELETE' }); } catch {}
+  showToast('Spotify disconnected');
+}
+
+async function pollNowPlaying() {
+  try {
+    const res = await fetch(`${API_BASE}/auth/spotify/now-playing?memberId=${state.memberId}&squadCode=${state.squadCode}`);
+    if (res.status === 401) { clearInterval(spotifyPollTimer); spotifyConnected = false; document.getElementById('spotify-btn-label').textContent = 'Connect Spotify'; renderMySpotify(null); return; }
+    if (!res.ok) return;
+    const data = await res.json();
+    renderMySpotify(data.playing ? data : null, !data.playing);
+  } catch {}
+}
+
+function renderMySpotify(sp, connectedIdle = false) {
+  const art  = document.getElementById('spotify-art');
+  const info = document.getElementById('spotify-status-line');
+  const prog = document.getElementById('spotify-progress');
+  const fill = document.getElementById('spotify-progress-fill');
+
+  if (!sp && !connectedIdle) {
+    art.innerHTML  = '🎵';
+    info.innerHTML = '<span class="spotify-none">Not connected — click "Connect Spotify" to share what you\'re listening to</span>';
+    prog.style.display = 'none';
+  } else if (!sp && connectedIdle) {
+    art.innerHTML  = '<span style="font-size:30px">⏸</span>';
+    info.innerHTML = '<span class="spotify-none">Spotify connected — nothing playing right now</span>';
+    prog.style.display = 'none';
+  } else {
+    art.innerHTML  = sp.albumArt
+      ? `<img src="${sp.albumArt}" style="width:58px;height:58px;object-fit:cover" />`
+      : '🎵';
+    const pct = sp.durationMs > 0 ? Math.round((sp.progressMs / sp.durationMs) * 100) : 0;
+    const link = sp.trackUrl
+      ? `<a href="${sp.trackUrl}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(sp.track)}</a>`
+      : esc(sp.track);
+    info.innerHTML = `<span class="now-dot"></span><div class="spotify-track">${link}</div><div class="spotify-artist">${esc(sp.artist)}</div>`;
+    prog.style.display = 'block';
+    fill.style.width   = pct + '%';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  COWORKER GRID  — grouped by shared status
+// ═══════════════════════════════════════════════════════════
+function moodColor(m) {
+  if (m >= 8) return 'var(--green)';
+  if (m >= 5) return 'var(--yellow)';
+  return 'var(--red)';
+}
+
+function renderCoworkers() {
+  const grid   = document.getElementById('coworker-grid');
+  const search = (document.getElementById('coworker-search')?.value || '').toLowerCase();
+  const members = (state.members || []).filter(m =>
+    m.name.toLowerCase().includes(search) || (m.status || '').toLowerCase().includes(search)
+  );
+
+  document.getElementById('member-count-badge').textContent = `${members.length} online`;
+
+  if (members.length === 0) {
+    grid.innerHTML = '<p style="color:var(--muted);font-weight:700;padding:20px 0;text-align:center">No members found</p>';
+    return;
+  }
+
+  // Group by status
+  const groups = {};
+  members.forEach(m => {
+    const key = m.status || 'Available';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(m);
+  });
+
+  grid.innerHTML = '';
+
+  Object.entries(groups).forEach(([status, grpMembers]) => {
+    const isLunch = status.toLowerCase().includes('lunch') || status.toLowerCase().includes('munch');
+    const emoji   = STATUS_EMOJI[status] || '💬';
+
+    // If more than 1 in this group, show a group block
+    if (grpMembers.length >= 2 && !search) {
+      const block = document.createElement('div');
+      block.className = 'group-block';
+
+      const title = document.createElement('div');
+      title.className = 'group-title';
+      title.textContent = getGroupTitle(status);
+      block.appendChild(title);
+
+      const inner = document.createElement('div');
+      inner.className = 'member-grid';
+      grpMembers.forEach(m => inner.appendChild(makeMemberCard(m)));
+      block.appendChild(inner);
+
+      if (isLunch) {
+        const action = document.createElement('div');
+        action.className = 'group-action';
+        action.innerHTML = `<button class="btn btn-yellow" style="font-size:16px">🍽️ Chow time!</button>`;
+        block.appendChild(action);
+      }
+
+      grid.appendChild(block);
+    } else {
+      // solo members just go into a flat grid
+      let flat = grid.querySelector('.flat-grid');
+      if (!flat) {
+        flat = document.createElement('div');
+        flat.className = 'member-grid flat-grid';
+        grid.appendChild(flat);
+      }
+      grpMembers.forEach(m => flat.appendChild(makeMemberCard(m)));
+    }
+  });
+}
+
+function getGroupTitle(status) {
+  if (status.toLowerCase().includes('meeting'))   return '📅 In a meeting together!';
+  if (status.toLowerCase().includes('lunch') || status.toLowerCase().includes('munch'))
+    return '🍕 Ready to eat together!';
+  if (status.toLowerCase().includes('coffee'))    return '☕ Coffee break crew!';
+  if (status.toLowerCase().includes('deep work') || status.toLowerCase().includes('focus'))
+    return '🎯 Deep work mode!';
+  if (status.toLowerCase().includes('break'))     return '🌿 On a break!';
+  return STATUS_EMOJI[status] || '💬' + ' ' + status;
+}
+
+function makeMemberCard(m) {
+  const isMe   = m.id === state.memberId;
+  const emoji  = STATUS_EMOJI[m.status] || '💬';
+  const moodPct = ((m.mood || 5) / 10) * 100;
+  const sp     = m.spotify;
+
+  const div = document.createElement('div');
+  div.className = 'member-card';
+  if (isMe) div.innerHTML += '<div class="me-tag">you</div>';
+
+  // avatar
+  const av = document.createElement('div');
+  av.className = 'avatar-face sm' + (isMe ? ' me' : '');
+  av.textContent = m.avatar;
+  div.appendChild(av);
+
+  // name
+  const nm = document.createElement('div');
+  nm.className = 'mc-name';
+  nm.textContent = m.name;
+  div.appendChild(nm);
+
+  // mood bar
+  const mbw = document.createElement('div');
+  mbw.className = 'mood-bar-wrap';
+  mbw.style.width = '100%';
+  mbw.innerHTML = `<div class="mood-bar-fill" style="width:${moodPct}%;background:${moodColor(m.mood||5)}"></div>`;
+  div.appendChild(mbw);
+
+  // status pill — clickable for own card
+  const stWrap = document.createElement('div');
+  stWrap.className = 'status-dropdown-wrap';
+
+  if (isMe) {
+    const pill = document.createElement('div');
+    pill.className = 'mc-status';
+    pill.innerHTML = `${emoji} ${esc(m.status || 'Available')} <span class="chevron">▾</span>`;
+
+    const sel = document.createElement('select');
+    ['Just arrived','Sipping coffee','In focus mode','Ready to collaborate',
+     'Heads-down coding','Available','In a meeting','Ready for lunch',
+     'Deep work — do not disturb','Taking a break'].forEach(s => {
+      const o = document.createElement('option');
+      o.value = s; o.textContent = s;
+      if (s === m.status) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.onchange = () => {
+      quickStatus(sel.value);
+      // re-render after tiny delay to get updated state
+      setTimeout(renderCoworkers, 200);
+    };
+    stWrap.appendChild(pill);
+    stWrap.appendChild(sel);
+  } else {
+    const pill = document.createElement('div');
+    pill.className = 'mc-status';
+    pill.style.cursor = 'default';
+    pill.innerHTML = `${emoji} ${esc(m.status || 'Available')}`;
+    stWrap.appendChild(pill);
+  }
+  div.appendChild(stWrap);
+
+  // spotify
+  if (sp) {
+    const spEl = document.createElement('div');
+    spEl.className = 'mc-spotify';
+    spEl.innerHTML = sp.albumArt
+      ? `<img src="${sp.albumArt}" style="width:10px;height:10px;border-radius:2px;vertical-align:middle;margin-right:3px" />` : '♪ ';
+    spEl.innerHTML += esc(sp.track);
+    div.appendChild(spEl);
+  }
+
+  return div;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  POLL
+// ═══════════════════════════════════════════════════════════
+function renderPoll() {
+  if (!state.poll) return;
+  document.getElementById('poll-question').textContent = state.poll.question;
+  const container = document.getElementById('poll-opts');
+  container.innerHTML = '';
+  const total = (state.pollVotes || []).reduce((a,b)=>a+b, 0);
+  state.poll.options.forEach((opt, i) => {
+    const votes = (state.pollVotes || [])[i] || 0;
+    const pct   = total > 0 ? Math.round((votes / total) * 100) : 0;
+    const voted = state.myVote >= 0;
+    const div = document.createElement('div');
+    div.className = 'poll-opt' + (state.myVote === i ? ' my-vote' : '');
+    div.innerHTML = `
+      <div class="poll-opt-bar" style="width:${voted ? pct : 0}%"></div>
+      <span>${esc(opt)}</span>
+      ${voted ? `<span class="poll-pct">${pct}%</span>` : ''}
+    `;
+    if (!voted) div.onclick = () => castVote(i);
+    container.appendChild(div);
+  });
+  if (state.myVote >= 0) document.getElementById('poll-voted-note').style.display = 'block';
+}
+
+async function castVote(i) {
+  try {
+    const res = await fetch(`${API_BASE}/squads/${state.squadCode}/poll/vote`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ memberId: state.memberId, optionIndex: i }),
+    });
+    const data = await res.json();
+    if (!res.ok) { if (res.status === 409) { showToast('Already voted!', true); return; } throw new Error(data.error); }
+    state.myVote = i; state.pollVotes = data.pollVotes;
+    document.getElementById('poll-voted-note').style.display = 'block';
+    renderPoll(); showToast('Vote recorded! 🗳️');
+  } catch (e) { showToast(e.message, true); }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SIDEBAR MEMBERS
+// ═══════════════════════════════════════════════════════════
+function renderSidebarMembers() {
+  const list = document.getElementById('sidebar-member-list');
+  list.innerHTML = '';
+  (state.members || []).forEach(m => {
+    const isMe = m.id === state.memberId;
+    const div  = document.createElement('div');
+    div.className = 'sb-member';
+    div.innerHTML = `
+      <div class="avatar-face xs">${m.avatar}</div>
+      <div class="sb-info">
+        <div class="sb-name">${esc(m.name)}${isMe ? ' <span style="color:var(--accent);font-size:10px">(you)</span>' : ''}</div>
+        <div class="sb-status">${esc(m.status || 'Available')}</div>
+      </div>
+      <div class="sb-mood-dot" style="background:${moodColor(m.mood||5)}" title="Mood ${m.mood}"></div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  EXPIRY BANNER
+// ═══════════════════════════════════════════════════════════
+function startExpiryCountdown() {
+  if (expiryInterval) clearInterval(expiryInterval);
+  updateExpiryBanner();
+  expiryInterval = setInterval(updateExpiryBanner, 60000);
+}
+
+function updateExpiryBanner() {
+  if (!state.expiresAt) return;
+  const remaining = state.expiresAt - Date.now();
+  const banner = document.getElementById('expires-banner');
+  const text   = document.getElementById('expires-text');
+  const extBtn = document.getElementById('btn-extend');
+  if (remaining <= 0) { text.textContent = '⚠️ This squad has expired.'; banner.classList.add('warn'); return; }
+  const hours = Math.floor(remaining / 3600000);
+  const mins  = Math.floor((remaining % 3600000) / 60000);
+  text.textContent = `⏱ Squad expires in ${hours > 0 ? hours + 'h ' : ''}${mins}m`;
+  if (remaining < 2 * 3600000) { banner.classList.add('warn'); if (state.me?.isCreator) extBtn.style.display = 'inline-flex'; }
+  else { banner.classList.remove('warn'); extBtn.style.display = 'none'; }
+}
+
+async function extendSquad() {
+  try {
+    const res = await fetch(`${API_BASE}/squads/${state.squadCode}/extend`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ memberId: state.memberId }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    state.expiresAt = data.expiresAt; updateExpiryBanner(); showToast('Squad extended 24h! 🎉');
+  } catch (e) { showToast(e.message, true); }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  LEAVE
+// ═══════════════════════════════════════════════════════════
+async function leaveSquad() {
+  if (!confirm('Leave the squad?')) return;
+  try { await fetch(`${API_BASE}/squads/${state.squadCode}/members/${state.memberId}`, { method: 'DELETE' }); } catch {}
+  if (ws) { ws.onclose = null; ws.close(); }
+  clearInterval(spotifyPollTimer); clearInterval(expiryInterval);
+  state = { ...state, squadCode:'', memberId:'', me:null, members:[], selectedAvatarCreate: AVATARS[0], selectedAvatarJoin: AVATARS[0] };
+  spotifyConnected = false; showScreen('landing'); showToast('You left the squad 👋');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════════
+function copyCode() {
+  navigator.clipboard?.writeText(state.squadCode).catch(()=>{});
+  [document.getElementById('code-display-val'), document.getElementById('hdr-squad-code')]
+    .forEach(el => { if(el) { el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),500); } });
+  showToast('Code copied! ' + state.squadCode);
+}
+
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimeout = null;
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : ' success');
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+buildAvatarPicker('avatar-picker-create', 'selectedAvatarCreate');
+buildAvatarPicker('avatar-picker-join',   'selectedAvatarJoin');
+</script>
+</body>
+</html>
