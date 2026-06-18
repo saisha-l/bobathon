@@ -19,7 +19,7 @@ const crypto  = require('crypto');
 // ─────────────────────────────────────────────────────────────
 const SPOTIFY_CLIENT_ID     = process.env.SPOTIFY_CLIENT_ID     || 'bc62fc7f29ea4b43b8fa9595bab35970';
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET || '4b1f27bddab94c3faced622c6bff0953';
-const SPOTIFY_REDIRECT_URI  = process.env.SPOTIFY_REDIRECT_URI  || 'http://localhost:3001/auth/spotify/callback';
+const SPOTIFY_REDIRECT_URI  = process.env.SPOTIFY_REDIRECT_URI  || 'http://127.0.0.1:3001/auth/spotify/callback';
 const PORT = process.env.PORT || 3001;
 
 const SQUAD_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours

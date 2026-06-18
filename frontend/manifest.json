@@ -3,12 +3,23 @@
   "short_name": "Bob WYD",
   "description": "Real-time workplace presence — see what your squad is up to",
   "start_url": "/",
-  "display": "standalone",
-  "background_color": "#dce9f7",
-  "theme_color": "#dce9f7",
-  "orientation": "portrait",
+  "display": "minimal-ui",
+  "display_override": ["window-controls-overlay", "minimal-ui", "standalone"],
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "orientation": "portrait-primary",
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "form_factor": "narrow",
+      "label": "BOB, WYD? widget"
+    }
+  ],
+  "categories": ["productivity", "social"]
 }

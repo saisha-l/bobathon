@@ -1,755 +1,747 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="Bob WYD" />
-<meta name="theme-color" content="#dce9f7" />
-<link rel="manifest" href="manifest.json" />
-<link rel="apple-touch-icon" href="icons/icon.svg" />
-<title>BOB, WYD?</title>
-<style>
-/* ── RESET ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Bob WYD" />
+  <meta name="theme-color" content="#dce9f7" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon.svg" />
+  <title>BOB, WYD?</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── TOKENS ── */
-:root {
-  --bg:         #dce9f7;
-  --surface:    #ffffff;
-  --surface2:   #eef4fb;
-  --border:     #d0e2f2;
-  --text:       #1a1a2e;
-  --muted:      #8a9ab8;
-  --accent:     #5b5bd6;
-  --accent-lt:  #eeefff;
-  --green:      #22c55e;
-  --green-lt:   #dcfce7;
-  --yellow:     #f5e178;
-  --yellow-dk:  #7a5c00;
-  --red:        #ef4444;
-  --pink-lt:    #fce7f3;
-  --pink:       #f472b6;
-  --r-card:     22px;
-  --r-pill:     999px;
-  --r-sm:       14px;
-  --shadow:     0 4px 20px rgba(91,91,214,0.10);
-  --shadow-sm:  0 2px 8px  rgba(91,91,214,0.07);
-  /* safe area insets */
-  --sat: env(safe-area-inset-top,    0px);
-  --sab: env(safe-area-inset-bottom, 0px);
-  --sal: env(safe-area-inset-left,   0px);
-  --sar: env(safe-area-inset-right,  0px);
-}
+    :root {
+      --bg:         #dce9f7;
+      --bg2:        #c8daf0;
+      --surface:    #ffffff;
+      --surface2:   #eaf1fb;
+      --surface3:   #d4e4f5;
+      --border:     rgba(0,0,0,0.08);
+      --text:       #1a1a2e;
+      --muted:      #6b7a99;
+      --accent:     #5b5bd6;
+      --accent-lt:  rgba(91,91,214,0.12);
+      --green:      #22c55e;
+      --green-lt:   rgba(34,197,94,0.15);
+      --red:        #ef4444;
+      --yellow:     #f59e0b;
+      --yellow-lt:  rgba(245,158,11,0.15);
+      --pink:       #f472b6;
+      --pink-lt:    rgba(244,114,182,0.18);
+      --r:          20px;
+      --r-sm:       12px;
+      --r-pill:     999px;
+      --shadow:     0 8px 32px rgba(100,140,200,0.18);
+      --shadow-sm:  0 2px 8px rgba(100,140,200,0.12);
+      --w:          720px;
+    }
 
-/* ── BASE ── */
-html, body {
-  height: 100%; width: 100%;
-  overscroll-behavior: none;
-}
-body {
-  font-family: -apple-system, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 15px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  overflow: hidden;          /* app chrome — inner scroll per screen */
-}
+    html, body {
+      height: 100%;
+      background: var(--bg2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Urbanist", -apple-system, "Segoe UI", system-ui, sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
 
-/* ── APP SHELL ── */
-#app {
-  position: fixed; inset: 0;
-  padding-top: var(--sat);
-  padding-bottom: var(--sab);
-  padding-left: var(--sal);
-  padding-right: var(--sar);
-  display: flex; flex-direction: column;
-}
+    /* ── WIDGET SHELL ────────────────────────────────────────── */
+    #widget {
+      width: var(--w);
+      max-width: 100vw;
+      max-height: 100dvh;
+      background: var(--bg);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      border: none;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
 
-/* ── SCREENS ── */
-.screen {
-  display: none;
-  flex-direction: column;
-  flex: 1;
-  overflow: hidden;
-}
-.screen.active { display: flex; }
+    /* ── WIDGET TITLEBAR ─────────────────────────────────────── */
+    .w-bar {
+      display: flex;
+      align-items: center;
+      padding: 18px 24px 10px;
+      background: transparent;
+      flex-shrink: 0;
+      cursor: default;
+      user-select: none;
+      position: relative;
+    }
+    /* count — left */
+    .hdr-count-lbl {
+      font-size: 13px; font-weight: 600; color: var(--muted); flex: 1;
+    }
+    /* squad pill — center */
+    .squad-badge {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: var(--r-pill);
+      padding: 10px 28px;
+      font-size: 20px;
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: var(--shadow-sm);
+    }
+    /* ws dot inside pill */
+    .ws-dot {
+      display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--border); margin-right: 6px; transition: background .3s; vertical-align: middle;
+    }
+    .ws-dot.live { background: var(--green); }
+    .ws-dot.err  { background: var(--red); }
+    /* close — right */
+    .icon-btn {
+      background: transparent; border: none; cursor: pointer;
+      color: var(--muted); font-size: 20px; font-weight: 700;
+      padding: 4px 6px; border-radius: 8px;
+      transition: color .15s, background .15s;
+      -webkit-tap-highlight-color: transparent;
+      margin-left: auto;
+    }
+    .icon-btn:hover { color: var(--text); }
 
-/* ── SHARED BUTTONS ── */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  gap: 8px; border: none; font-family: inherit; font-size: 15px;
-  font-weight: 700; cursor: pointer; border-radius: var(--r-pill);
-  padding: 13px 28px; transition: opacity .15s, transform .1s;
-  -webkit-tap-highlight-color: transparent;
-}
-.btn:active  { transform: scale(0.96); opacity: 0.85; }
-.btn:disabled{ opacity: .4; pointer-events: none; }
-.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(91,91,214,.30); }
-.btn-soft    { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
-.btn-yellow  { background: var(--yellow);  color: var(--yellow-dk); box-shadow: 0 4px 14px rgba(245,225,120,.4); font-size: 17px; padding: 16px 36px; }
-.btn-ghost   { background: transparent; color: var(--muted); border: 2px solid var(--border); }
-.btn-icon    { width: 40px; height: 40px; padding: 0; border-radius: 50%; background: transparent; border: none; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
-.btn-icon:active { transform: scale(0.9); }
-.btn-sm      { padding: 8px 18px; font-size: 13px; }
-.btn-danger  { background: #fee2e2; color: var(--red); }
+    /* ── SCREENS ─────────────────────────────────────────────── */
+    .screen { display: none; flex-direction: column; flex: 1; overflow: hidden; min-height: 0; }
+    .screen.active { display: flex; }
 
-/* ── INPUTS ── */
-.inp {
-  width: 100%; background: var(--surface); border: 2px solid var(--border);
-  border-radius: var(--r-sm); padding: 13px 16px;
-  color: var(--text); font-size: 16px; font-family: inherit;
-  outline: none; -webkit-appearance: none;
-  transition: border-color .15s;
-}
-.inp:focus { border-color: var(--accent); }
-.inp::placeholder { color: var(--muted); }
-.lbl { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .7px; display: block; margin-bottom: 6px; }
-.fgrp { display: flex; flex-direction: column; gap: 6px; }
-.ferr { color: var(--red); font-size: 12px; font-weight: 700; }
+    /* scrollable body inside a screen */
+    .w-scroll {
+      flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px;
+    }
+    .w-scroll::-webkit-scrollbar { width: 3px; }
+    .w-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-/* ── PILL ── */
-.pill { display: inline-flex; align-items: center; gap: 5px; border-radius: var(--r-pill); padding: 5px 14px; font-size: 13px; font-weight: 700; }
-.pill-accent { background: var(--accent-lt); color: var(--accent); }
-.pill-green  { background: var(--green-lt);  color: #15803d; }
-.pill-muted  { background: var(--surface2);  color: var(--muted); }
+    /* ── LANDING ─────────────────────────────────────────────── */
+    #s-landing .hero {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      padding: 20px 0 8px; text-align: center;
+    }
+    .hero-faces { display: flex; gap: 6px; justify-content: center; }
+    .hero-face  { font-size: 28px; line-height: 1; }
+    .hero h1 { font-size: 32px; font-weight: 900; letter-spacing: -1px; line-height: 1.1; }
+    .hero h1 span { color: var(--accent); }
+    .hero p { color: var(--muted); font-size: 13px; font-weight: 600; }
+    .chips { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+    .chip {
+      background: var(--surface); border-radius: var(--r-pill);
+      padding: 4px 12px; font-size: 12px; font-weight: 700; color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .land-btns { display: flex; flex-direction: column; gap: 10px; }
 
-/* ── STEP DOTS ── */
-.step-dots { display: flex; gap: 7px; justify-content: center; }
-.step-dot  { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all .2s; }
-.step-dot.on { background: var(--accent); width: 22px; border-radius: 4px; }
+    /* ── BUTTONS ─────────────────────────────────────────────── */
+    .btn {
+      border: none; border-radius: var(--r-pill); cursor: pointer;
+      font-size: 14px; font-weight: 700; padding: 12px 24px;
+      font-family: inherit;
+      transition: opacity .15s, transform .1s;
+      display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active  { transform: scale(0.97); opacity: 0.85; }
+    .btn:disabled{ opacity: .4; pointer-events: none; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-soft    { background: var(--surface2); color: var(--text); }
+    .btn-ghost   { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+    .btn-danger  { background: var(--red); color: #fff; }
+    .btn-green   { background: var(--green); color: #fff; }
+    .btn-sm      { padding: 2px 8px 2px 12px; font-size: 13px; width: 117px; }
+    .btn-full    { width: 100%; justify-content: center; }
+    .spin {
+      width: 13px; height: 13px; border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── SPINNER ── */
-.spin { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .65s linear infinite; display: inline-block; }
-@keyframes spin { to { transform: rotate(360deg); } }
+    /* ── FORM ELEMENTS ───────────────────────────────────────── */
+    .fcard {
+      background: var(--surface); border-radius: var(--r); border: none;
+      box-shadow: var(--shadow-sm);
+      padding: 20px; display: flex; flex-direction: column; gap: 14px;
+    }
+    .fcard h2 { font-size: 18px; font-weight: 800; color: var(--text); }
+    .fgrp { display: flex; flex-direction: column; gap: 6px; }
+    .lbl  { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+    .inp, .sel {
+      background: var(--surface2); border: none; border-radius: var(--r-sm);
+      color: var(--text); font-size: 14px; padding: 10px 14px; width: 100%;
+      font-family: inherit; outline: none; transition: box-shadow .15s; appearance: none;
+    }
+    .inp:focus, .sel:focus { box-shadow: 0 0 0 2px var(--accent); }
+    .inp::placeholder { color: var(--muted); }
+    .ferr { color: var(--red); font-size: 12px; font-weight: 700; }
 
-/* ── TOAST ── */
-#toast {
-  position: fixed; bottom: calc(var(--sab) + 24px); left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: var(--text); color: #fff;
-  padding: 11px 22px; border-radius: var(--r-pill);
-  font-size: 14px; font-weight: 700; z-index: 999;
-  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
-  pointer-events: none; box-shadow: var(--shadow); white-space: nowrap;
-}
-#toast.show   { transform: translateX(-50%) translateY(0); }
-#toast.err    { background: var(--red); }
-#toast.ok     { background: var(--green); }
+    /* step dots */
+    .step-dots { display: flex; gap: 6px; justify-content: center; }
+    .step-dot   { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: all .2s; }
+    .step-dot.on{ background: var(--accent); width: 18px; border-radius: 3px; }
 
-/* ── FLASH ── */
-.flash { animation: fl .35s; }
-@keyframes fl { 0%,100%{opacity:1} 50%{opacity:.3} }
+    /* ── AVATAR BUILDER ──────────────────────────────────────── */
+    .av-builder { display: flex; flex-direction: column; gap: 10px; }
+    .av-preview {
+      width: 80px; height: 80px; border-radius: 50%; overflow: hidden;
+      position: relative; background: var(--surface2); border: 2px solid var(--accent);
+      margin: 0 auto; flex-shrink: 0;
+    }
+    .av-preview img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    }
+    .av-row { display: flex; flex-direction: column; gap: 5px; }
+    .av-opts { display: flex; gap: 5px; flex-wrap: wrap; }
+    .av-opt {
+      width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--border);
+      overflow: hidden; cursor: pointer; flex-shrink: 0; position: relative;
+      background: var(--surface2); transition: border-color .15s, transform .1s;
+    }
+    .av-opt img { width: 100%; height: 100%; object-fit: cover; }
+    .av-opt.on     { border-color: var(--accent); }
+    .av-opt:active { transform: scale(.9); }
+    .av-opt-none {
+      width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--border);
+      cursor: pointer; flex-shrink: 0; background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; transition: border-color .15s;
+    }
+    .av-opt-none.on { border-color: var(--accent); }
 
-/* ══════════════════════════════════════
-   LANDING
-══════════════════════════════════════ */
-#s-landing {
-  align-items: center; justify-content: center;
-  gap: 28px; padding: 40px 28px;
-}
-.land-title { text-align: center; }
-.land-title h1 { font-size: 52px; font-weight: 900; letter-spacing: -2px; line-height: 1; }
-.land-title h1 span { color: var(--accent); }
-.land-title p  { color: var(--muted); font-size: 16px; font-weight: 600; margin-top: 8px; }
-.land-faces {
-  display: flex; justify-content: center;
-}
-.land-faces .face-bubble {
-  width: 72px; height: 72px; font-size: 42px; margin-left: -14px;
-  border: 3px solid var(--bg);
-}
-.land-faces .face-bubble:first-child { margin-left: 0; }
-.land-btns   { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px; }
-.land-chips  { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; max-width: 340px; }
-.chip { background: var(--surface); border-radius: var(--r-pill); padding: 5px 13px; font-size: 12px; font-weight: 700; color: var(--muted); box-shadow: var(--shadow-sm); }
+    /* theme swatches */
+    .th-grid   { display: flex; gap: 7px; flex-wrap: wrap; }
+    .th-swatch {
+      width: 28px; height: 28px; border-radius: 6px; border: 2px solid transparent;
+      cursor: pointer; transition: border-color .15s, transform .1s;
+    }
+    .th-swatch.on    { border-color: #fff; }
+    .th-swatch:active{ transform: scale(.9); }
 
-/* ══════════════════════════════════════
-   FORM CARD SCREENS
-══════════════════════════════════════ */
-.form-screen {
-  align-items: center; justify-content: flex-start;
-  overflow-y: auto; padding: 28px 20px 40px;
-}
-.fcard {
-  background: var(--surface); border-radius: var(--r-card);
-  box-shadow: var(--shadow); padding: 28px 24px;
-  width: 100%; max-width: 420px;
-  display: flex; flex-direction: column; gap: 20px;
-}
-.fcard h2 { font-size: 22px; font-weight: 900; }
 
-/* avatar picker */
-.av-grid { display: flex; gap: 8px; flex-wrap: wrap; }
-.av-opt  {
-  width: 50px; height: 50px; border-radius: 50%;
-  background: var(--surface2); border: 3px solid transparent;
-  display: flex; align-items: center; justify-content: center; font-size: 26px;
-  cursor: pointer; transition: border-color .15s, transform .1s;
-  -webkit-tap-highlight-color: transparent;
-}
-.av-opt:active { transform: scale(.94); }
-.av-opt.on { border-color: var(--accent); background: var(--accent-lt); }
+    /* code box */
+    .code-box {
+      background: var(--surface2); border-radius: var(--r-sm); padding: 14px;
+      text-align: center; cursor: pointer; border: 1px solid var(--border);
+    }
+    .code-val { font-size: 26px; font-weight: 900; letter-spacing: 6px; color: var(--accent); }
+    .code-box p { color: var(--muted); font-size: 11px; font-weight: 600; margin-top: 4px; }
 
-/* theme swatches */
-.th-grid   { display: flex; gap: 10px; flex-wrap: wrap; }
-.th-swatch {
-  width: 42px; height: 42px; border-radius: 12px;
-  cursor: pointer; border: 3px solid transparent;
-  transition: border-color .15s, transform .1s;
-  -webkit-tap-highlight-color: transparent;
-}
-.th-swatch:active { transform: scale(.93); }
-.th-swatch.on { border-color: var(--accent); }
+    /* ── DASHBOARD ───────────────────────────────────────────── */
+    #s-dash {
+      display: none; flex-direction: column; flex: 1; overflow: hidden; min-height: 0;
+    }
+    #s-dash.active { display: flex; }
 
-/* mood row */
-.mood-row { display: flex; align-items: center; gap: 12px; }
-.mood-row input[type=range] { flex: 1; accent-color: var(--accent); height: 6px; cursor: pointer; }
-.mood-num { font-size: 22px; font-weight: 900; min-width: 30px; text-align: center; color: var(--accent); }
+    /* exp banner */
+    .exp-banner {
+      padding: 4px 24px 8px; font-size: 12px; font-weight: 600; color: var(--muted);
+      display: flex; align-items: center; justify-content: space-between;
+      background: transparent; flex-shrink: 0;
+    }
+    .exp-banner.warn { color: var(--yellow); }
 
-/* code box */
-.code-box {
-  background: var(--accent-lt); border: 2px dashed var(--accent);
-  border-radius: var(--r-card); padding: 24px; text-align: center; cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.code-box .code-val {
-  font-size: 40px; font-weight: 900; letter-spacing: 8px; color: var(--accent);
-  font-variant-numeric: tabular-nums;
-}
-.code-box p { color: var(--muted); font-size: 12px; font-weight: 600; margin-top: 6px; }
+    /* bottom tab bar */
+    .bottom-tabs {
+      display: flex; border-top: 1px solid var(--border); flex-shrink: 0;
+      background: var(--surface); border-radius: 0 0 var(--r) var(--r);
+    }
+    .tab-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 3px; padding: 10px 4px; background: transparent; border: none; cursor: pointer;
+      font-family: inherit; -webkit-tap-highlight-color: transparent; transition: background .15s;
+    }
+    .tab-btn:active { background: var(--accent-lt); }
+    .tab-btn.active { background: var(--accent-lt); }
+    .tab-btn .ti { font-size: 20px; line-height: 1; }
+    .tab-btn .tl { font-size: 10px; font-weight: 700; color: var(--muted); }
+    .tab-btn.active .tl { color: var(--accent); }
 
-/* ══════════════════════════════════════
-   DASHBOARD — APP CHROME
-══════════════════════════════════════ */
-#s-dash {
-  background: var(--bg);
-}
+    /* panes */
+    .pane { display: none; flex-direction: column; flex: 1; overflow: hidden; min-height: 0; }
+    .pane.active { display: flex; }
+    .pane-scroll { flex: 1; overflow-y: auto; padding: 8px 24px 24px; display: flex; flex-direction: column; gap: 12px; }
+    .pane-scroll::-webkit-scrollbar { width: 3px; }
+    .pane-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-/* ─── APP HEADER ─── */
-.app-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 20px 0;
-  flex-shrink: 0;
-  position: relative;
-}
-.hdr-count {
-  font-size: 14px; font-weight: 700; color: var(--muted);
-  min-width: 120px;
-}
-.hdr-squad-pill {
-  position: absolute; left: 50%; transform: translateX(-50%);
-  background: var(--surface); border-radius: var(--r-pill);
-  padding: 10px 26px; font-size: 22px; font-weight: 900;
-  color: var(--text); box-shadow: var(--shadow);
-  white-space: nowrap;
-}
-.hdr-close {
-  font-size: 26px; color: var(--muted); background: none; border: none;
-  cursor: pointer; line-height: 1; -webkit-tap-highlight-color: transparent;
-  min-width: 40px; text-align: right;
-}
-.hdr-close:active { opacity: .6; }
+    /* ── SQUAD PANE ──────────────────────────────────────────── */
+    .member-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0 8px;
+    }
+    /* no card bg — members float directly on gradient */
+    .mc {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      padding: 16px 8px 16px; cursor: default;
+      position: relative;
+    }
+    /* thought-bubble wrapper sits above .face-bubble */
+    .sp-thought {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100px;
+    }
+    /* the album art bubble */
+    .sp-bubble {
+      width: 72px; height: 72px;
+      border-radius: 16px;
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 2px solid var(--surface);
+    }
+    .sp-bubble img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .sp-bubble-emoji {
+      width: 72px; height: 72px;
+      border-radius: 16px;
+      background: var(--green-lt);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+    }
+    /* two small dots forming the "tail" of the thought bubble */
+    .sp-tail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      margin-top: 3px;
+    }
+    .sp-tail span {
+      display: block;
+      border-radius: 50%;
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+    }
+    .sp-tail span:nth-child(1) { width: 10px; height: 10px; }
+    .sp-tail span:nth-child(2) { width: 6px;  height: 6px;  }
+    .mc-name  { font-size: 15px; font-weight: 700; text-align: center; color: var(--text); line-height: 1.2; word-break: break-word; }
+    .face-bubble {
+      width: 100px; height: 100px; border-radius: 50%; background: var(--surface2);
+      border: none; flex-shrink: 0; position: relative; overflow: hidden;
+    }
+    .face-bubble img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    }
+    .face-bubble.me { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-/* ─── WS DOT ─── */
-.ws-dot {
-  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
-  background: var(--muted); margin-right: 5px; vertical-align: middle;
-  transition: background .3s;
-}
-.ws-dot.live  { background: var(--green); }
-.ws-dot.err   { background: var(--red); }
+    /* status pill — matches spec: 117px, padding 2px 8px 2px 12px, space-between */
+    .status-pill {
+      display: flex; width: 117px; padding: 2px 8px 2px 12px;
+      justify-content: space-between; align-items: center;
+      background: var(--surface); border-radius: var(--r-pill);
+      font-size: 13px; font-weight: 600; color: var(--text);
+      border: none; box-shadow: var(--shadow-sm);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      cursor: pointer;
+    }
+    .status-pill .pill-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+    .status-pill .pill-chev  { flex-shrink: 0; color: var(--muted); font-size: 11px; margin-left: 4px; }
+    .status-pill.lunch-pill  { background: var(--pink-lt); color: #be185d; }
+    .status-wrap { position: relative; }
+    .status-wrap select {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; font-size: 14px;
+    }
 
-/* ─── SCROLLABLE BODY ─── */
-.dash-scroll {
-  flex: 1; overflow-y: auto; overflow-x: hidden;
-  padding: 20px 20px 40px;
-  display: flex; flex-direction: column; gap: 28px;
-  -webkit-overflow-scrolling: touch;
-}
+    .sp-mini {
+      font-size: 11px; font-weight: 700; color: var(--green); background: var(--green-lt);
+      border-radius: var(--r-pill); padding: 2px 8px; max-width: 117px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center;
+    }
+    /* track label under the status pill when thought bubble is shown */
+    .sp-track-label {
+      font-size: 10px; font-weight: 600; color: var(--green);
+      max-width: 117px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      text-align: center; margin-top: -4px;
+    }
 
-/* ─── MEMBER GRID (top-level ungrouped) ─── */
-.member-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 16px;
-}
+    /* group block — light blue card */
+    .group-section-label {
+      font-size: 18px; font-weight: 700; color: var(--text); text-align: center; padding: 4px 0;
+    }
+    .group-block {
+      background: var(--surface2); border-radius: var(--r); border: none;
+      padding: 12px 16px 20px; display: flex; flex-direction: column; gap: 0;
+    }
+    .group-label { display: none; } /* label is now above the block */
+    .chow-btn-wrap { display: flex; justify-content: center; margin-top: 12px; }
+    .btn-chow {
+      background: var(--surface3); color: var(--text); border: none; border-radius: var(--r-pill);
+      font-family: inherit; font-size: 18px; font-weight: 700; padding: 14px 48px;
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      transition: opacity .15s, transform .1s; width: 100%; justify-content: center;
+    }
+    .btn-chow:active { transform: scale(.97); opacity: .85; }
 
-/* ─── INDIVIDUAL MEMBER CARD ─── */
-.mc {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 10px; cursor: default;
-}
-.mc-name {
-  font-size: 16px; font-weight: 800; text-align: center;
-  color: var(--text); line-height: 1.2;
-}
-/* The big face bubble */
-.face-bubble {
-  border-radius: 50%; background: var(--surface);
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--shadow); border: 3px solid rgba(255,255,255,0.9);
-  flex-shrink: 0; font-size: 52px;
-  width: 100px; height: 100px;
-  transition: transform .15s;
-}
-.face-bubble.me { border-color: var(--accent); border-width: 3px; }
+    /* section title */
+    .sec-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
 
-/* ─── STATUS PILL (dropdown overlay) ─── */
-.status-wrap { position: relative; display: inline-flex; }
-.status-pill {
-  background: var(--surface); border: 1.5px solid var(--border);
-  border-radius: var(--r-pill); padding: 7px 14px;
-  font-size: 13px; font-weight: 700; color: var(--text);
-  display: flex; align-items: center; gap: 5px; cursor: pointer;
-  white-space: nowrap; box-shadow: var(--shadow-sm);
-  transition: border-color .15s;
-  -webkit-tap-highlight-color: transparent;
-}
-.status-pill.lunch-pill { background: var(--pink-lt); border-color: var(--pink); color: #be185d; }
-.status-pill .chev { color: var(--muted); font-size: 11px; margin-left: 1px; }
-.status-wrap select {
-  position: absolute; inset: 0; opacity: 0;
-  cursor: pointer; width: 100%; height: 100%;
-  font-size: 16px; /* prevent iOS zoom */
-}
+    /* ── ME PANE ─────────────────────────────────────────────── */
+    .me-top { display: flex; align-items: center; gap: 14px; }
+    .me-av-big {
+      width: 60px; height: 60px; border-radius: 50%; background: var(--surface2);
+      outline: 2px solid var(--accent); outline-offset: 2px; flex-shrink: 0;
+      position: relative; overflow: hidden;
+    }
+    .me-av-big img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    }
+    .me-info { flex: 1; min-width: 0; }
+    .me-name { font-size: 16px; font-weight: 800; }
+    .me-status-txt { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .live-badge {
+      font-size: 10px; font-weight: 800; color: var(--green); background: var(--green-lt);
+      border-radius: var(--r-pill); padding: 3px 10px; border: 1px solid var(--green);
+    }
+    .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .qpill {
+      background: var(--surface); border-radius: var(--r-pill); border: none;
+      box-shadow: var(--shadow-sm); padding: 9px 12px; font-size: 13px; font-weight: 700;
+      cursor: pointer; text-align: center; font-family: inherit;
+      transition: background .15s, transform .1s; color: var(--text);
+    }
+    .qpill:active { background: var(--accent-lt); transform: scale(.97); }
+    .ctrl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-/* ─── GROUP BLOCK ─── */
-.group-block {
-  background: var(--surface2); border-radius: var(--r-card);
-  padding: 20px 18px 18px;
-  display: flex; flex-direction: column; gap: 16px;
-}
-.group-label {
-  font-size: 22px; font-weight: 900; text-align: center; color: var(--text);
-}
-.chow-btn-wrap {
-  display: flex; justify-content: center; padding-top: 4px;
-}
+    /* ── SPOTIFY PANE ────────────────────────────────────────── */
+    .sp-art {
+      width: 100%; aspect-ratio: 1; border-radius: var(--r); background: var(--surface2);
+      overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 60px;
+    }
+    .sp-art img { width: 100%; height: 100%; object-fit: cover; }
+    .sp-track  { font-size: 18px; font-weight: 800; line-height: 1.3; }
+    .sp-artist { font-size: 13px; color: var(--green); font-weight: 700; }
+    .sp-prog-wrap { height: 4px; background: var(--surface2); border-radius: 999px; overflow: hidden; }
+    .sp-prog-fill { height: 100%; background: #1db954; border-radius: 999px; transition: width 1s linear; }
+    .sp-none  { color: var(--muted); font-size: 13px; font-weight: 600; line-height: 1.6; padding: 10px 0; }
+    .now-dot  {
+      display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+      background: #1db954; margin-right: 6px; animation: pulse 1.4s infinite; vertical-align: middle;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.6)} }
+    .sp-header { display: flex; align-items: center; justify-content: space-between; }
 
-/* ─── BOTTOM SHEET TABS ─── */
-.bottom-tabs {
-  display: flex; background: rgba(255,255,255,.82);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  border-top: 1px solid var(--border);
-  padding: 10px 16px calc(var(--sab) + 10px);
-  gap: 4px; flex-shrink: 0;
-}
-.tab-btn {
-  flex: 1; display: flex; flex-direction: column; align-items: center;
-  gap: 3px; padding: 6px 4px; border-radius: 12px;
-  background: none; border: none; cursor: pointer; font-family: inherit;
-  -webkit-tap-highlight-color: transparent; transition: background .15s;
-}
-.tab-btn:active { background: var(--surface2); }
-.tab-btn.active { background: var(--accent-lt); }
-.tab-btn .ti { font-size: 22px; }
-.tab-btn .tl { font-size: 10px; font-weight: 800; color: var(--muted); }
-.tab-btn.active .tl { color: var(--accent); }
+    /* ── POLL PANE ───────────────────────────────────────────── */
 
-/* ─── PANE PANELS ─── */
-.pane { display: none; flex-direction: column; flex: 1; overflow: hidden; }
-.pane.active { display: flex; }
+    /* ── TOAST ───────────────────────────────────────────────── */
+    #toast {
+      position: absolute; bottom: 64px; left: 50%; transform: translateX(-50%) translateY(12px);
+      background: var(--text); color: var(--surface); border-radius: var(--r-pill);
+      padding: 8px 20px; font-size: 13px; font-weight: 700; white-space: nowrap;
+      opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; z-index: 100;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.err  { background: var(--red); color: #fff; }
+    #toast.ok   { background: var(--green); color: #fff; }
 
-/* ── My Status Panel (tab 2) ── */
-.my-panel {
-  padding: 20px; gap: 18px; overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.my-avatar-big {
-  font-size: 80px; width: 120px; height: 120px;
-  border-radius: 50%; background: var(--surface);
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--shadow); border: 3px solid var(--accent);
-  margin: 0 auto;
-}
-.live-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--green-lt); color: #15803d;
-  border-radius: var(--r-pill); padding: 4px 14px;
-  font-size: 12px; font-weight: 800; text-transform: uppercase;
-}
-.my-name-big { font-size: 26px; font-weight: 900; text-align: center; }
-.my-status-txt { color: var(--muted); font-size: 14px; font-weight: 600; text-align: center; }
-.quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.qpill {
-  background: var(--surface); border: 2px solid var(--border);
-  border-radius: var(--r-pill); padding: 10px 12px;
-  font-size: 13px; font-weight: 700; cursor: pointer; text-align: center;
-  -webkit-tap-highlight-color: transparent; transition: border-color .15s, background .15s;
-}
-.qpill:active { background: var(--accent-lt); border-color: var(--accent); transform: scale(.97); }
-.ctrl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.ctrl-sel {
-  width: 100%; background: var(--surface2); border: 2px solid var(--border);
-  border-radius: var(--r-sm); padding: 10px 12px; color: var(--text);
-  font-size: 14px; font-family: inherit; font-weight: 700; outline: none;
-  -webkit-appearance: none; cursor: pointer;
-}
-.ctrl-sel:focus { border-color: var(--accent); }
+    /* ── INSTALL BANNER ──────────────────────────────────────── */
+    #install-banner {
+      display: none; align-items: center; gap: 8px; padding: 8px 16px;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+    #install-banner.show { display: flex; }
+    #install-banner p { flex: 1; }
 
-/* ── Spotify Panel (tab 3) ── */
-.spotify-panel {
-  padding: 20px; gap: 16px; overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.spotify-big-art {
-  width: 180px; height: 180px; border-radius: 20px;
-  background: var(--surface2); display: flex; align-items: center;
-  justify-content: center; font-size: 80px; margin: 0 auto;
-  box-shadow: var(--shadow); overflow: hidden;
-}
-.spotify-big-art img { width: 100%; height: 100%; object-fit: cover; }
-.sp-track  { font-size: 20px; font-weight: 900; text-align: center; line-height: 1.3; }
-.sp-artist { font-size: 14px; font-weight: 700; color: #15803d; text-align: center; }
-.sp-prog-wrap { height: 5px; background: var(--surface2); border-radius: 999px; overflow: hidden; }
-.sp-prog-fill { height: 100%; background: #1db954; border-radius: 999px; transition: width 1s linear; }
-.sp-none { color: var(--muted); font-weight: 600; text-align: center; font-size: 14px; line-height: 1.6; padding: 20px 0; }
-.now-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #1db954; margin-right: 6px; animation: pulse 1.4s infinite; vertical-align: middle; }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+    /* ── FLASH ───────────────────────────────────────────────── */
+    .flash { animation: fl .35s; }
+    @keyframes fl { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-/* ── Poll Panel (tab 4) ── */
-.poll-panel {
-  padding: 20px; gap: 14px; overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.poll-q { font-size: 18px; font-weight: 800; line-height: 1.4; }
-.poll-opt {
-  background: var(--surface); border: 2px solid var(--border);
-  border-radius: var(--r-pill); padding: 14px 18px;
-  font-size: 14px; font-weight: 700; cursor: pointer;
-  position: relative; overflow: hidden;
-  display: flex; align-items: center; justify-content: space-between;
-  transition: border-color .15s;
-  -webkit-tap-highlight-color: transparent;
-}
-.poll-opt:active { transform: scale(.98); }
-.poll-opt.voted  { border-color: var(--accent); background: var(--accent-lt); cursor: default; }
-.poll-bar { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent-lt); transition: width .4s; z-index: 0; border-radius: var(--r-pill); }
-.poll-opt > * { position: relative; z-index: 1; }
-.poll-pct { font-size: 13px; font-weight: 900; color: var(--accent); }
-.poll-note { font-size: 12px; font-weight: 700; color: var(--accent); text-align: center; }
+    /* ── FULLSCREEN (installed PWA) ──────────────────────────── */
+    @media (display-mode: standalone) {
+      html, body { align-items: flex-start; justify-content: flex-start; background: var(--bg); }
+      #widget { width: 100%; max-width: 100%; height: 100dvh; border-radius: 0; box-shadow: none; }
+    }
 
-/* ── Expires banner ── */
-.exp-banner {
-  background: var(--surface); border-radius: var(--r-sm);
-  padding: 10px 16px; font-size: 13px; font-weight: 700; color: var(--muted);
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  box-shadow: var(--shadow-sm); flex-shrink: 0; margin: 0 20px;
-}
-.exp-banner.warn { background: #fef9c3; color: #92400e; }
-
-/* ── Section title ── */
-.sec-title {
-  font-size: 12px; font-weight: 800; color: var(--muted);
-  text-transform: uppercase; letter-spacing: .7px;
-}
-
-/* ── Install banner ── */
-#install-banner {
-  display: none; position: fixed; bottom: calc(var(--sab) + 80px); left: 16px; right: 16px;
-  background: var(--surface); border-radius: var(--r-card); box-shadow: var(--shadow);
-  padding: 14px 18px; gap: 12px; align-items: center; z-index: 99;
-}
-#install-banner.show { display: flex; }
-#install-banner p { flex: 1; font-size: 13px; font-weight: 700; }
-
-/* scrollbar */
-::-webkit-scrollbar { width: 0; }
-</style>
+    /* ── SMALL PHONE ─────────────────────────────────────────── */
+    @media (max-height: 580px) {
+      .w-scroll, .pane-scroll { padding: 8px 16px; gap: 8px; }
+    }
+  </style>
 </head>
 <body>
-<div id="app">
+<div id="widget">
 
-<!-- ══════════════════════════════════════
-     LANDING
-══════════════════════════════════════ -->
-<div id="s-landing" class="screen active">
-  <div class="land-title">
-    <h1>BOB,<br><span>WYD?</span></h1>
-    <p>See what your squad is up to.</p>
+  <!-- ══════════════════════════════════════════════════════════
+       TITLE BAR (shown on dashboard only)
+  ══════════════════════════════════════════════════════════ -->
+  <div class="w-bar" id="w-bar" style="display:none">
+    <span class="hdr-count-lbl"><span id="hdr-count">0</span> people are here</span>
+    <span class="squad-badge"><span class="ws-dot" id="ws-dot"></span><span id="hdr-squad">Squad</span></span>
+    <button class="icon-btn" onclick="leaveSquad()" title="Leave squad">✕</button>
   </div>
-  <div class="land-faces">
-    <div class="face-bubble" style="width:72px;height:72px;font-size:40px">🐱</div>
-    <div class="face-bubble" style="width:72px;height:72px;font-size:40px">🦊</div>
-    <div class="face-bubble" style="width:72px;height:72px;font-size:40px">🐼</div>
-    <div class="face-bubble" style="width:72px;height:72px;font-size:40px">🦁</div>
-    <div class="face-bubble" style="width:72px;height:72px;font-size:40px">🐶</div>
-  </div>
-  <div class="land-btns">
-    <button class="btn btn-primary" style="width:100%" onclick="go('create-1')">+ Create Squad</button>
-    <button class="btn btn-soft"    style="width:100%" onclick="go('join')">Join Squad</button>
-  </div>
-  <div class="land-chips">
-    <span class="chip">Real-time presence</span>
-    <span class="chip">Spotify</span>
-    <span class="chip">Daily Poll</span>
-    <span class="chip">Mood tracker</span>
-    <span class="chip">6-digit codes</span>
-  </div>
-</div>
 
-<!-- ══════════════════════════════════════
-     CREATE — 1
-══════════════════════════════════════ -->
-<div id="s-create-1" class="screen form-screen">
-  <div class="fcard">
-    <div class="step-dots"><div class="step-dot on"></div><div class="step-dot"></div><div class="step-dot"></div></div>
-    <h2>Create Your Squad 🎉</h2>
-    <div class="fgrp">
-      <label class="lbl">Squad Name</label>
-      <input id="inp-sname" class="inp" type="text" placeholder="e.g. Design Team…" maxlength="30" />
-      <div id="err-sname" class="ferr" style="display:none">3–30 characters please</div>
-    </div>
-    <div class="fgrp">
-      <label class="lbl">Theme</label>
-      <div class="th-grid" id="theme-picker">
-        <div class="th-swatch on"  data-theme="sky"      style="background:linear-gradient(135deg,#c9dff5,#a5c8f0)" title="Sky"></div>
-        <div class="th-swatch"     data-theme="lavender" style="background:linear-gradient(135deg,#c4b5fd,#a78bfa)" title="Lavender"></div>
-        <div class="th-swatch"     data-theme="mint"     style="background:linear-gradient(135deg,#a7f3d0,#6ee7b7)" title="Mint"></div>
-        <div class="th-swatch"     data-theme="peach"    style="background:linear-gradient(135deg,#fed7aa,#fca5a5)" title="Peach"></div>
-        <div class="th-swatch"     data-theme="lemon"    style="background:linear-gradient(135deg,#fef08a,#fcd34d)" title="Lemon"></div>
+  <!-- install prompt -->
+  <div id="install-banner">
+    <p>📲 Add to home screen</p>
+    <button class="btn btn-primary btn-sm" onclick="installPWA()">Install</button>
+    <button class="icon-btn" onclick="byId('install-banner').classList.remove('show')">✕</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       LANDING SCREEN
+  ══════════════════════════════════════════════════════════ -->
+  <div id="s-landing" class="screen active">
+    <div class="w-scroll">
+      <div class="hero">
+        <div class="hero-faces">
+          <span class="hero-face">🐱</span>
+          <span class="hero-face">🦊</span>
+          <span class="hero-face">🐼</span>
+          <span class="hero-face">🦁</span>
+          <span class="hero-face">🐶</span>
+        </div>
+        <h1>BOB,<br><span>WYD?</span></h1>
+        <p>See what your squad is up to — right now.</p>
+      </div>
+      <div class="chips">
+        <span class="chip">Real-time</span>
+        <span class="chip">Spotify</span>
+        <span class="chip">No accounts</span>
+      </div>
+      <div class="land-btns">
+        <button class="btn btn-primary btn-full" onclick="go('create-1')">+ Create Squad</button>
+        <button class="btn btn-soft btn-full"    onclick="go('join')">Join Squad</button>
       </div>
     </div>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="go('landing')">Back</button>
-      <button class="btn btn-primary" style="flex:2" onclick="c1next()">Next →</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     CREATE — 2
-══════════════════════════════════════ -->
-<div id="s-create-2" class="screen form-screen">
-  <div class="fcard">
-    <div class="step-dots"><div class="step-dot"></div><div class="step-dot on"></div><div class="step-dot"></div></div>
-    <h2>Your Profile 😊</h2>
-    <div class="fgrp">
-      <label class="lbl">Your Name</label>
-      <input id="inp-cname" class="inp" type="text" placeholder="e.g. Alice…" maxlength="20" />
-      <div id="err-cname" class="ferr" style="display:none">2–20 characters please</div>
-    </div>
-    <div class="fgrp">
-      <label class="lbl">Avatar</label>
-      <div class="av-grid" id="av-create"></div>
-    </div>
-    <div class="fgrp">
-      <label class="lbl">Starting Mood</label>
-      <div class="mood-row">
-        <input type="range" id="cmood" min="1" max="10" value="7" oninput="byId('cmoodv').textContent=this.value" />
-        <span class="mood-num" id="cmoodv">7</span>
-      </div>
-    </div>
-    <div class="fgrp">
-      <label class="lbl">Status</label>
-      <select id="inp-cstatus" class="inp" style="-webkit-appearance:none">
-        <option>Just arrived</option><option>Sipping coffee</option>
-        <option>In focus mode</option><option>Ready to collaborate</option>
-        <option>Heads-down coding</option><option>Available</option>
-        <option>In a meeting</option><option>Ready for lunch</option>
-      </select>
-    </div>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="go('create-1')">Back</button>
-      <button class="btn btn-primary" style="flex:2" id="btn-create" onclick="doCreate()">Create Squad →</button>
-    </div>
-    <div id="err-create" class="ferr" style="display:none"></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     CREATE — 3 (code)
-══════════════════════════════════════ -->
-<div id="s-create-3" class="screen form-screen">
-  <div class="fcard">
-    <div class="step-dots"><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot on"></div></div>
-    <h2>Squad Ready! 🚀</h2>
-    <p style="color:var(--muted);font-size:14px;font-weight:600">Share this code with your squad.</p>
-    <div class="code-box" onclick="copyCode()">
-      <div class="code-val" id="code-val">------</div>
-      <p>Tap to copy · Expires in 24h</p>
-    </div>
-    <button class="btn btn-primary" style="width:100%" onclick="launchDash()">Enter Squad →</button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     JOIN
-══════════════════════════════════════ -->
-<div id="s-join" class="screen form-screen">
-  <div class="fcard">
-    <h2>Join a Squad 👋</h2>
-    <div class="fgrp">
-      <label class="lbl">Join Code</label>
-      <input id="inp-jcode" class="inp" type="text" placeholder="B7X4Q2" maxlength="6"
-             style="text-transform:uppercase;letter-spacing:6px;font-size:24px;font-weight:900;text-align:center"
-             oninput="this.value=this.value.toUpperCase()" />
-      <div id="err-jcode" class="ferr" style="display:none"></div>
-    </div>
-    <div class="fgrp">
-      <label class="lbl">Your Name</label>
-      <input id="inp-jname" class="inp" type="text" placeholder="e.g. Charlie…" maxlength="20" />
-      <div id="err-jname" class="ferr" style="display:none">2–20 characters please</div>
-    </div>
-    <div class="fgrp">
-      <label class="lbl">Avatar</label>
-      <div class="av-grid" id="av-join"></div>
-    </div>
-    <div class="fgrp">
-      <label class="lbl">Starting Mood</label>
-      <div class="mood-row">
-        <input type="range" id="jmood" min="1" max="10" value="7" oninput="byId('jmoodv').textContent=this.value" />
-        <span class="mood-num" id="jmoodv">7</span>
-      </div>
-    </div>
-    <div class="fgrp">
-      <label class="lbl">Status</label>
-      <select id="inp-jstatus" class="inp" style="-webkit-appearance:none">
-        <option>Just arrived</option><option>Sipping coffee</option>
-        <option>In focus mode</option><option>Ready to collaborate</option>
-        <option>Heads-down coding</option><option>Available</option>
-        <option>In a meeting</option><option>Ready for lunch</option>
-      </select>
-    </div>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="go('landing')">Back</button>
-      <button class="btn btn-primary" style="flex:2" id="btn-join" onclick="doJoin()">Join Squad →</button>
-    </div>
-    <div id="err-join" class="ferr" style="display:none"></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     DASHBOARD
-══════════════════════════════════════ -->
-<div id="s-dash" class="screen">
-
-  <!-- Header -->
-  <div class="app-header">
-    <div class="hdr-count">
-      <span class="ws-dot" id="ws-dot"></span>
-      <span id="hdr-count">0 here</span>
-    </div>
-    <div class="hdr-squad-pill" id="hdr-squad">Squad</div>
-    <button class="hdr-close" onclick="leaveSquad()">✕</button>
   </div>
 
-  <!-- Expiry banner -->
-  <div class="exp-banner" id="exp-banner" style="margin-top:12px">
-    <span id="exp-txt"></span>
-    <button class="btn btn-sm btn-ghost" id="btn-extend" style="display:none" onclick="extendSquad()">+24h</button>
-  </div>
-
-  <!-- TAB PANES -->
-
-  <!-- Squad tab -->
-  <div id="pane-squad" class="pane active">
-    <div class="dash-scroll" id="squad-scroll">
-      <!-- rendered by JS -->
-    </div>
-  </div>
-
-  <!-- Me tab -->
-  <div id="pane-me" class="pane">
-    <div class="dash-scroll my-panel">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
-        <div class="my-avatar-big" id="me-av-big">?</div>
-        <div class="my-name-big"   id="me-name-big">You</div>
-        <div class="my-status-txt" id="me-status-txt">Available</div>
-        <span class="live-badge">● LIVE</span>
-      </div>
-      <div>
-        <div class="lbl" style="margin-bottom:10px">Quick Status</div>
-        <div class="quick-grid">
-          <div class="qpill" onclick="qStatus('Sipping coffee')">☕ Coffee</div>
-          <div class="qpill" onclick="qStatus('Ready for lunch')">🍕 Lunch</div>
-          <div class="qpill" onclick="qStatus('Deep work — do not disturb')">🎯 Deep work</div>
-          <div class="qpill" onclick="qStatus('In a meeting')">📅 Meeting</div>
-          <div class="qpill" onclick="qStatus('Taking a break')">🌿 Break</div>
-          <div class="qpill" onclick="qStatus('Just arrived')">👋 Hi!</div>
+  <!-- ══════════════════════════════════════════════════════════
+       CREATE — STEP 1
+  ══════════════════════════════════════════════════════════ -->
+  <div id="s-create-1" class="screen">
+    <div class="w-scroll">
+      <div class="fcard">
+        <div class="step-dots">
+          <div class="step-dot on"></div><div class="step-dot"></div><div class="step-dot"></div>
+        </div>
+        <h2>Create Your Squad 🎉</h2>
+        <div class="fgrp">
+          <label class="lbl">Squad Name</label>
+          <input id="inp-sname" class="inp" type="text" placeholder="e.g. Design Team…" maxlength="30" />
+          <div id="err-sname" class="ferr" style="display:none">3–30 characters please</div>
+        </div>
+        <div class="fgrp">
+          <label class="lbl">Theme</label>
+          <div class="th-grid" id="theme-picker">
+            <div class="th-swatch on"  data-theme="sky"      style="background:linear-gradient(135deg,#c9dff5,#a5c8f0)"></div>
+            <div class="th-swatch"     data-theme="lavender" style="background:linear-gradient(135deg,#c4b5fd,#a78bfa)"></div>
+            <div class="th-swatch"     data-theme="mint"     style="background:linear-gradient(135deg,#a7f3d0,#6ee7b7)"></div>
+            <div class="th-swatch"     data-theme="peach"    style="background:linear-gradient(135deg,#fed7aa,#fca5a5)"></div>
+            <div class="th-swatch"     data-theme="lemon"    style="background:linear-gradient(135deg,#fef08a,#fcd34d)"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" style="flex:1" onclick="go('landing')">Back</button>
+          <button class="btn btn-primary" style="flex:2" onclick="c1next()">Next →</button>
         </div>
       </div>
-      <div class="ctrl-row">
-        <div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       CREATE — STEP 2
+  ══════════════════════════════════════════════════════════ -->
+  <div id="s-create-2" class="screen">
+    <div class="w-scroll">
+      <div class="fcard">
+        <div class="step-dots">
+          <div class="step-dot"></div><div class="step-dot on"></div><div class="step-dot"></div>
+        </div>
+        <h2>Your Profile 😊</h2>
+        <div class="fgrp">
+          <label class="lbl">Your Name</label>
+          <input id="inp-cname" class="inp" type="text" placeholder="e.g. Alice…" maxlength="20" />
+          <div id="err-cname" class="ferr" style="display:none">2–20 characters please</div>
+        </div>
+        <div class="fgrp">
+          <label class="lbl">Avatar</label>
+          <div class="av-builder" id="av-create"></div>
+        </div>
+        <div class="fgrp">
           <label class="lbl">Status</label>
-          <select id="me-status-sel" class="ctrl-sel" onchange="updateStatus()">
+          <select id="inp-cstatus" class="inp sel">
             <option>Just arrived</option><option>Sipping coffee</option>
             <option>In focus mode</option><option>Ready to collaborate</option>
             <option>Heads-down coding</option><option>Available</option>
             <option>In a meeting</option><option>Ready for lunch</option>
-            <option>Deep work — do not disturb</option><option>Taking a break</option>
           </select>
         </div>
-        <div>
-          <label class="lbl">Mood</label>
-          <div class="mood-row">
-            <input type="range" id="me-mood" min="1" max="10" value="7"
-                   oninput="byId('me-moodv').textContent=this.value" onchange="updateMood(this.value)" />
-            <span class="mood-num" id="me-moodv">7</span>
-          </div>
+        <div id="err-create" class="ferr" style="display:none"></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" style="flex:1" onclick="go('create-1')">Back</button>
+          <button class="btn btn-primary" style="flex:2" id="btn-create" onclick="doCreate()">Create Squad →</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Spotify tab -->
-  <div id="pane-spotify" class="pane">
-    <div class="dash-scroll spotify-panel">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div class="sec-title">Now Playing</div>
-        <button class="btn btn-sm btn-soft" onclick="toggleSpotify()"><span id="sp-btn">Connect Spotify</span></button>
-      </div>
-      <div class="spotify-big-art" id="sp-art">🎵</div>
-      <div id="sp-info">
-        <p class="sp-none">Connect Spotify to share what you're listening to with your squad.</p>
-      </div>
-      <div class="sp-prog-wrap" id="sp-prog" style="display:none">
-        <div class="sp-prog-fill" id="sp-prog-fill" style="width:0%"></div>
+  <!-- ══════════════════════════════════════════════════════════
+       CREATE — STEP 3 (code reveal)
+  ══════════════════════════════════════════════════════════ -->
+  <div id="s-create-3" class="screen">
+    <div class="w-scroll">
+      <div class="fcard">
+        <div class="step-dots">
+          <div class="step-dot"></div><div class="step-dot"></div><div class="step-dot on"></div>
+        </div>
+        <h2>Squad Ready! 🚀</h2>
+        <p style="color:var(--muted);font-size:12px;font-weight:600">Share this code with your squad.</p>
+        <div class="code-box" onclick="copyCode()">
+          <div class="code-val" id="code-val">------</div>
+          <p>Tap to copy · Expires in 24h</p>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="launchDash()">Enter Squad →</button>
       </div>
     </div>
   </div>
 
-  <!-- Poll tab -->
-  <div id="pane-poll" class="pane">
-    <div class="dash-scroll poll-panel">
-      <div class="sec-title">Daily Poll</div>
-      <div class="poll-q" id="poll-q"></div>
-      <div id="poll-opts"></div>
-      <div id="poll-note" class="poll-note" style="display:none">✅ You voted! Results update live.</div>
+  <!-- ══════════════════════════════════════════════════════════
+       JOIN SCREEN
+  ══════════════════════════════════════════════════════════ -->
+  <div id="s-join" class="screen">
+    <div class="w-scroll">
+      <div class="fcard">
+        <h2>Join a Squad 👋</h2>
+        <div class="fgrp">
+          <label class="lbl">Join Code</label>
+          <input id="inp-jcode" class="inp" type="text" placeholder="B7X4Q2" maxlength="6"
+            style="text-transform:uppercase;letter-spacing:4px;font-size:18px;font-weight:900;text-align:center"
+            oninput="this.value=this.value.toUpperCase()" />
+          <div id="err-jcode" class="ferr" style="display:none"></div>
+        </div>
+        <div class="fgrp">
+          <label class="lbl">Your Name</label>
+          <input id="inp-jname" class="inp" type="text" placeholder="e.g. Charlie…" maxlength="20" />
+          <div id="err-jname" class="ferr" style="display:none">2–20 characters please</div>
+        </div>
+        <div class="fgrp">
+          <label class="lbl">Avatar</label>
+          <div class="av-builder" id="av-join"></div>
+        </div>
+        <div class="fgrp">
+          <label class="lbl">Status</label>
+          <select id="inp-jstatus" class="inp sel">
+            <option>Just arrived</option><option>Sipping coffee</option>
+            <option>In focus mode</option><option>Ready to collaborate</option>
+            <option>Heads-down coding</option><option>Available</option>
+            <option>In a meeting</option><option>Ready for lunch</option>
+          </select>
+        </div>
+        <div id="err-join" class="ferr" style="display:none"></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" style="flex:1" onclick="go('landing')">Back</button>
+          <button class="btn btn-primary" style="flex:2" id="btn-join" onclick="doJoin()">Join Squad →</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Bottom Tab Bar -->
-  <div class="bottom-tabs">
-    <button class="tab-btn active" id="tab-squad" onclick="switchTab('squad')">
-      <span class="ti">👥</span><span class="tl">Squad</span>
-    </button>
-    <button class="tab-btn" id="tab-me" onclick="switchTab('me')">
-      <span class="ti">😊</span><span class="tl">Me</span>
-    </button>
-    <button class="tab-btn" id="tab-spotify" onclick="switchTab('spotify')">
-      <span class="ti">🎵</span><span class="tl">Music</span>
-    </button>
-    <button class="tab-btn" id="tab-poll" onclick="switchTab('poll')">
-      <span class="ti">📊</span><span class="tl">Poll</span>
-    </button>
-  </div>
+  <!-- ══════════════════════════════════════════════════════════
+       DASHBOARD
+  ══════════════════════════════════════════════════════════ -->
+  <div id="s-dash" class="screen">
 
-</div><!-- /s-dash -->
+    <!-- expiry banner -->
+    <div class="exp-banner" id="exp-banner">
+      <span id="exp-txt"></span>
+      <button class="btn btn-sm btn-ghost" id="btn-extend" style="display:none" onclick="extendSquad()">+24h</button>
+    </div>
 
-<!-- Install PWA banner -->
-<div id="install-banner">
-  <p>📲 Add BOB, WYD? to your home screen!</p>
-  <button class="btn btn-primary btn-sm" onclick="installPWA()">Install</button>
-  <button class="btn-icon" onclick="byId('install-banner').classList.remove('show')">✕</button>
-</div>
+    <!-- SQUAD TAB -->
+    <div id="pane-squad" class="pane active">
+      <div class="pane-scroll" id="squad-scroll"></div>
+    </div>
 
-</div><!-- /app -->
-<div id="toast"></div>
+    <!-- ME TAB -->
+    <div id="pane-me" class="pane">
+      <div class="pane-scroll">
+        <div class="me-top">
+          <div class="me-av-big" id="me-av-big">?</div>
+          <div class="me-info">
+            <div class="me-name" id="me-name-big">You</div>
+            <div class="me-status-txt" id="me-status-txt">Available</div>
+          </div>
+          <span class="live-badge">● LIVE</span>
+        </div>
+        <div>
+          <div class="lbl" style="margin-bottom:6px">Quick Status</div>
+          <div class="quick-grid">
+            <div class="qpill" onclick="qStatus('Sipping coffee')">☕ Coffee</div>
+            <div class="qpill" onclick="qStatus('Ready for lunch')">🍕 Lunch</div>
+            <div class="qpill" onclick="qStatus('Deep work — do not disturb')">🎯 Deep work</div>
+            <div class="qpill" onclick="qStatus('In a meeting')">📅 Meeting</div>
+            <div class="qpill" onclick="qStatus('Taking a break')">🌿 Break</div>
+            <div class="qpill" onclick="qStatus('Just arrived')">👋 Hi!</div>
+          </div>
+        </div>
+        <div class="ctrl-row">
+          <div class="fgrp">
+            <label class="lbl">Status</label>
+            <select id="me-status-sel" class="inp sel" onchange="updateStatus()">
+              <option>Just arrived</option><option>Sipping coffee</option>
+              <option>In focus mode</option><option>Ready to collaborate</option>
+              <option>Heads-down coding</option><option>Available</option>
+              <option>In a meeting</option><option>Ready for lunch</option>
+              <option>Deep work — do not disturb</option><option>Taking a break</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-soft btn-sm" onclick="toggleSpotify()" style="align-self:flex-start">
+          <span id="sp-btn-me">🎵 Connect Spotify</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- SPOTIFY TAB -->
+    <div id="pane-spotify" class="pane">
+      <div class="pane-scroll">
+        <div class="sp-header">
+          <div class="sec-title">Now Playing</div>
+          <button class="btn btn-soft btn-sm" onclick="toggleSpotify()"><span id="sp-btn">Connect Spotify</span></button>
+        </div>
+        <div class="sp-art" id="sp-art">🎵</div>
+        <div id="sp-info">
+          <p class="sp-none">Connect Spotify to share what you're listening to with your squad.</p>
+        </div>
+        <div class="sp-prog-wrap" id="sp-prog" style="display:none">
+          <div class="sp-prog-fill" id="sp-prog-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- bottom tabs -->
+    <div class="bottom-tabs">
+      <button class="tab-btn active" id="tab-squad"   onclick="switchTab('squad')">
+        <span class="ti">👥</span><span class="tl">Squad</span>
+      </button>
+      <button class="tab-btn"        id="tab-me"      onclick="switchTab('me')">
+        <span class="ti">😊</span><span class="tl">Me</span>
+      </button>
+      <button class="tab-btn"        id="tab-spotify" onclick="switchTab('spotify')">
+        <span class="ti">🎵</span><span class="tl">Music</span>
+      </button>
+    </div>
+
+  </div><!-- /#s-dash -->
+
+  <div id="toast"></div>
+</div><!-- /#widget -->
 
 <script>
 // ═══════════════════════════════════════════════════════════
@@ -761,7 +753,45 @@ const WSU = 'ws://localhost:3001';
 // ═══════════════════════════════════════════════════════════
 //  CONSTANTS
 // ═══════════════════════════════════════════════════════════
-const AVATARS = ['🐱','🐶','🦊','🐸','🐼','🐨','🦁','🐯','🐮','🐷','🦄','🐙','🦋','🐬','🦅','🦉','🐲','🌸'];
+const SKINS = [
+  { id:'skin1', src:'avatars/skin1.png' },
+  { id:'skin2', src:'avatars/skin2.png' },
+  { id:'skin3', src:'avatars/skin3.png' },
+  { id:'skin4', src:'avatars/skin4.png' },
+];
+const HAIRS = [
+  { id:'none',           src:null,                           label:'Bald' },
+  { id:'short-black',    src:'avatars/hair/short-black.png'   },
+  { id:'short-brown',    src:'avatars/hair/short-brown.png'   },
+  { id:'short-blonde',   src:'avatars/hair/short-blonde.png'  },
+  { id:'short2-black',   src:'avatars/hair/short2-black.png'  },
+  { id:'short2-brown',   src:'avatars/hair/short2-brown.png'  },
+  { id:'short2-blonde',  src:'avatars/hair/short2-blonde.png' },
+  { id:'straight-black', src:'avatars/hair/straight-black.png'},
+  { id:'straight-brown', src:'avatars/hair/straight-brown.png'},
+  { id:'straight-blonde',src:'avatars/hair/straight-blonde.png'},
+  { id:'wavy-black',     src:'avatars/hair/wavy-black.png'    },
+  { id:'wavy-brown',     src:'avatars/hair/wavy-brown.png'    },
+  { id:'wavy-blonde',    src:'avatars/hair/wavy-blonde.png'   },
+];
+
+// avatar string format: "skin1|short-black" or "skin2|none"
+function avatarSrc(av) {
+  if (!av) return { skin: SKINS[0].src, hair: null };
+  const [skinId, hairId] = av.split('|');
+  const skin = SKINS.find(s => s.id === skinId) || SKINS[0];
+  const hair = HAIRS.find(h => h.id === hairId);
+  return { skin: skin.src, hair: hair?.src || null };
+}
+
+// Render an avatar into any container element (clears existing children)
+function renderAvatar(el, av) {
+  el.innerHTML = '';
+  const { skin, hair } = avatarSrc(av);
+  const si = document.createElement('img'); si.src = skin; el.appendChild(si);
+  if (hair) { const hi = document.createElement('img'); hi.src = hair; el.appendChild(hi); }
+}
+
 const STATUS_EMOJI = {
   'Just arrived':               '👋',
   'Sipping coffee':             '☕',
@@ -780,11 +810,12 @@ const LUNCH_STATUSES = ['ready for lunch','ready to munch','lunch','eating'];
 // ═══════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════
+const DEFAULT_AVATAR = 'skin1|none';
 let S = {
   code:'', name:'', theme:'sky', expiresAt:null,
   memberId:'', me:null, members:[],
   poll:null, pollVotes:[], myVote:-1,
-  avCreate: AVATARS[0], avJoin: AVATARS[0],
+  avCreate: DEFAULT_AVATAR, avJoin: DEFAULT_AVATAR,
   selTheme: 'sky',
   pendingName:'', pendingTheme:'sky',
 };
@@ -798,6 +829,7 @@ const byId = id => document.getElementById(id);
 function go(screen) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   byId('s-' + screen).classList.add('active');
+  byId('w-bar').style.display = screen === 'dash' ? 'flex' : 'none';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -806,18 +838,82 @@ function go(screen) {
 function buildAv(containerId, stateKey) {
   const el = byId(containerId);
   el.innerHTML = '';
-  S[stateKey] = AVATARS[0];
-  AVATARS.forEach((a, i) => {
+  S[stateKey] = DEFAULT_AVATAR;
+
+  // Live preview circle
+  const preview = document.createElement('div');
+  preview.className = 'av-preview';
+  renderAvatar(preview, S[stateKey]);
+  el.appendChild(preview);
+
+  function updatePreview() {
+    renderAvatar(preview, S[stateKey]);
+  }
+
+  // Skin row
+  const skinRow = document.createElement('div');
+  skinRow.className = 'av-row';
+  const skinLbl = document.createElement('div');
+  skinLbl.className = 'lbl'; skinLbl.textContent = 'Skin';
+  const skinOpts = document.createElement('div');
+  skinOpts.className = 'av-opts';
+  SKINS.forEach((s, i) => {
     const d = document.createElement('div');
     d.className = 'av-opt' + (i === 0 ? ' on' : '');
-    d.textContent = a;
+    const img = document.createElement('img'); img.src = s.src;
+    d.appendChild(img);
     d.onclick = () => {
-      el.querySelectorAll('.av-opt').forEach(x => x.classList.remove('on'));
+      skinOpts.querySelectorAll('.av-opt').forEach(x => x.classList.remove('on'));
       d.classList.add('on');
-      S[stateKey] = a;
+      const [, hairId] = S[stateKey].split('|');
+      S[stateKey] = s.id + '|' + (hairId || 'none');
+      updatePreview();
     };
-    el.appendChild(d);
+    skinOpts.appendChild(d);
   });
+  skinRow.appendChild(skinLbl); skinRow.appendChild(skinOpts);
+
+  // Hair row
+  const hairRow = document.createElement('div');
+  hairRow.className = 'av-row';
+  const hairLbl = document.createElement('div');
+  hairLbl.className = 'lbl'; hairLbl.textContent = 'Hair';
+  const hairOpts = document.createElement('div');
+  hairOpts.className = 'av-opts';
+  HAIRS.forEach((h, i) => {
+    let d;
+    if (!h.src) {
+      // "Bald" option
+      d = document.createElement('div');
+      d.className = 'av-opt-none' + (i === 0 ? ' on' : '');
+      d.textContent = '∅';
+    } else {
+      d = document.createElement('div');
+      d.className = 'av-opt' + (i === 0 ? ' on' : '');
+      // show hair on top of first skin for accurate preview
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;width:100%;height:100%';
+      const base = document.createElement('img'); base.src = SKINS[0].src;
+      base.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover';
+      const hair = document.createElement('img'); hair.src = h.src;
+      hair.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover';
+      wrap.appendChild(base); wrap.appendChild(hair);
+      d.appendChild(wrap);
+    }
+    d.onclick = () => {
+      hairOpts.querySelectorAll('.av-opt,.av-opt-none').forEach(x => x.classList.remove('on'));
+      d.classList.add('on');
+      const [skinId] = S[stateKey].split('|');
+      S[stateKey] = (skinId || 'skin1') + '|' + h.id;
+      updatePreview();
+    };
+    hairOpts.appendChild(d);
+  });
+  // default: select "none" (bald) as initially on
+  hairRow.appendChild(hairLbl); hairRow.appendChild(hairOpts);
+
+  el.appendChild(skinRow);
+  el.appendChild(hairRow);
 }
 
 document.querySelectorAll('#theme-picker .th-swatch').forEach(el => {
@@ -853,7 +949,6 @@ async function doCreate() {
     const r = await api('POST','/squads',{
       name: S.pendingName, theme: S.pendingTheme,
       creatorName: n, creatorAvatar: S.avCreate,
-      creatorMood: +byId('cmood').value,
       creatorStatus: byId('inp-cstatus').value,
     });
     S.code=r.squad.code; S.name=r.squad.name; S.theme=r.squad.theme;
@@ -882,7 +977,6 @@ async function doJoin() {
   try {
     const r = await api('POST',`/squads/${code}/join`,{
       name, avatar: S.avJoin,
-      mood: +byId('jmood').value,
       status: byId('inp-jstatus').value,
     });
     S.code=r.squad.code; S.name=r.squad.name; S.theme=r.squad.theme;
@@ -906,10 +1000,11 @@ function initDash() {
   go('dash');
   switchTab('squad');
   startExpiry();
+  checkSpotifyStatus();
 }
 
 function switchTab(tab) {
-  ['squad','me','spotify','poll'].forEach(t => {
+  ['squad','me','spotify'].forEach(t => {
     byId('pane-'+t).classList.toggle('active', t===tab);
     byId('tab-'+t).classList.toggle('active', t===tab);
   });
@@ -934,7 +1029,7 @@ function connectWS() {
   };
 
   socket.onmessage = e => {
-    let m; try{m=JSON.parse(e.data)}catch{return}
+    let m; try{m=JSON.parse(e.data)}catch{return;}
     if (m.type==='SQUAD_STATE')    applyState(m.data);
     if (m.type==='SQUAD_EXTENDED') { S.expiresAt=m.expiresAt; updateExpiry(); toast('Squad extended 24h! 🎉'); }
     if (m.type==='ERROR')          toast(m.error,true);
@@ -953,101 +1048,101 @@ function connectWS() {
 // ═══════════════════════════════════════════════════════════
 function applyState(d) {
   S.members   = d.members || [];
-  S.poll      = d.poll;
-  S.pollVotes = d.pollVotes;
   S.expiresAt = d.expiresAt;
 
   const me = S.members.find(m => m.id===S.memberId);
   if (me) {
     S.me = me;
-    byId('me-av-big').textContent    = me.avatar;
+    renderAvatar(byId('me-av-big'), me.avatar);
     byId('me-name-big').textContent  = me.name;
     byId('me-status-txt').textContent= me.status;
-    byId('me-moodv').textContent     = me.mood;
-    byId('me-mood').value            = me.mood;
     const sel = byId('me-status-sel');
     for(let o of sel.options) if(o.value===me.status){o.selected=true;break;}
   }
 
-  byId('hdr-count').textContent = `${S.members.length}/${S.members.length} people are here`;
+  byId('hdr-count').textContent = S.members.length + ' here';
   renderSquad();
-  renderPoll();
   updateExpiry();
 }
 
 // ═══════════════════════════════════════════════════════════
-//  SQUAD RENDER  (the main screen matching the screenshot)
+//  SQUAD RENDER
 // ═══════════════════════════════════════════════════════════
 function isLunch(status='') {
   return LUNCH_STATUSES.some(l => status.toLowerCase().includes(l));
 }
 
-function moodColor(m) {
-  return m>=8 ? 'var(--green)' : m>=5 ? 'var(--yellow)' : 'var(--red)';
-}
-
 function renderSquad() {
   const scroll = byId('squad-scroll');
   scroll.innerHTML = '';
-
   const members = S.members || [];
 
-  // Separate ungrouped (unique status) from grouped (2+ share same status)
+  if (!members.length) {
+    scroll.innerHTML = '<p style="color:var(--muted);font-weight:700;text-align:center;padding:30px 0 0">No members yet — share your code!</p>';
+    return;
+  }
+
+  // Split into lunch group (all lunch statuses merged) and everyone else
+  const lunchMembers = members.filter(m => isLunch(m.status||''));
+  const otherMembers = members.filter(m => !isLunch(m.status||''));
+
+  // Among non-lunch members, group those sharing the same status (2+)
   const statusMap = {};
-  members.forEach(m => {
+  otherMembers.forEach(m => {
     const k = (m.status||'Available').toLowerCase().trim();
     if (!statusMap[k]) statusMap[k] = [];
     statusMap[k].push(m);
   });
+  const otherGrouped   = Object.values(statusMap).filter(g => g.length >= 2);
+  const otherUngrouped = otherMembers.filter(m =>
+    statusMap[(m.status||'Available').toLowerCase().trim()].length < 2
+  );
 
-  const grouped   = Object.values(statusMap).filter(g => g.length >= 2);
-  const ungrouped = members.filter(m => {
-    const k = (m.status||'Available').toLowerCase().trim();
-    return statusMap[k].length < 2;
-  });
-
-  // Top flat grid (ungrouped)
-  if (ungrouped.length) {
+  // 1. Ungrouped members — float freely on background
+  if (otherUngrouped.length) {
     const grid = document.createElement('div');
     grid.className = 'member-grid';
-    ungrouped.forEach(m => grid.appendChild(makeMC(m)));
+    otherUngrouped.forEach(m => grid.appendChild(makeMC(m)));
     scroll.appendChild(grid);
   }
 
-  // Group blocks
-  grouped.forEach(grp => {
+  // 2. Other status groups (e.g. "In a meeting")
+  otherGrouped.forEach(grp => {
     const status = grp[0].status || 'Available';
-    const lunch  = isLunch(status);
+    const sectionLbl = document.createElement('div');
+    sectionLbl.className = 'group-section-label';
+    sectionLbl.textContent = (STATUS_EMOJI[status]||'💬') + ' ' + getGroupLabel(status);
+    scroll.appendChild(sectionLbl);
 
     const block = document.createElement('div');
     block.className = 'group-block';
-
-    // Group label
-    const lbl = document.createElement('div');
-    lbl.className = 'group-label';
-    lbl.textContent = lunch ? '🍕 Ready to eat together!'
-      : (STATUS_EMOJI[status] || '💬') + ' ' + getGroupLabel(status);
-    block.appendChild(lbl);
-
-    // Grid of members
     const grid = document.createElement('div');
     grid.className = 'member-grid';
     grp.forEach(m => grid.appendChild(makeMC(m)));
     block.appendChild(grid);
-
-    // Chow time button for lunch groups
-    if (lunch) {
-      const wrap = document.createElement('div');
-      wrap.className = 'chow-btn-wrap';
-      wrap.innerHTML = '<button class="btn btn-yellow">🍽️ Chow time!</button>';
-      block.appendChild(wrap);
-    }
-
     scroll.appendChild(block);
   });
 
-  if (!members.length) {
-    scroll.innerHTML = '<p style="color:var(--muted);font-weight:700;text-align:center;padding:40px 0">No members yet — share your code!</p>';
+  // 3. Lunch section — always shown when anyone is ready to eat
+  if (lunchMembers.length) {
+    const sectionLbl = document.createElement('div');
+    sectionLbl.className = 'group-section-label';
+    sectionLbl.textContent = 'Ready to eat together!';
+    scroll.appendChild(sectionLbl);
+
+    const block = document.createElement('div');
+    block.className = 'group-block';
+    const grid = document.createElement('div');
+    grid.className = 'member-grid';
+    lunchMembers.forEach(m => grid.appendChild(makeMC(m)));
+    block.appendChild(grid);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'chow-btn-wrap';
+    wrap.innerHTML = '<button class="btn-chow">🍽 Chow time!</button>';
+    block.appendChild(wrap);
+
+    scroll.appendChild(block);
   }
 }
 
@@ -1067,25 +1162,46 @@ function makeMC(m) {
   const wrap = document.createElement('div');
   wrap.className = 'mc';
 
-  // name (with "(You)" suffix matching image)
   const nm = document.createElement('div');
   nm.className = 'mc-name';
-  nm.textContent = isMe ? m.name + ' (You)' : m.name;
+  nm.textContent = isMe ? m.name+' (You)' : m.name;
   wrap.appendChild(nm);
 
-  // face bubble
+  // ── Spotify thought bubble (shown above the face when playing) ──
+  if (m.spotify) {
+    const thought = document.createElement('div');
+    thought.className = 'sp-thought';
+    const bubble = document.createElement('div');
+    if (m.spotify.albumArt) {
+      bubble.className = 'sp-bubble';
+      const img = document.createElement('img');
+      img.src = m.spotify.albumArt;
+      img.alt = m.spotify.track || 'Album art';
+      img.onerror = () => { bubble.className='sp-bubble-emoji'; bubble.innerHTML='🎵'; };
+      bubble.appendChild(img);
+    } else {
+      bubble.className = 'sp-bubble-emoji';
+      bubble.textContent = '🎵';
+    }
+    const tail = document.createElement('div');
+    tail.className = 'sp-tail';
+    tail.innerHTML = '<span></span><span></span>';
+    thought.appendChild(bubble);
+    thought.appendChild(tail);
+    wrap.appendChild(thought);
+  }
+
   const fb = document.createElement('div');
   fb.className = 'face-bubble' + (isMe ? ' me' : '');
-  fb.textContent = m.avatar;
+  renderAvatar(fb, m.avatar);
   wrap.appendChild(fb);
 
-  // status pill with dropdown for own card
   const sw = document.createElement('div');
   sw.className = 'status-wrap';
 
   const pill = document.createElement('div');
   pill.className = 'status-pill' + (lunch ? ' lunch-pill' : '');
-  pill.innerHTML = `${emoji} ${esc(m.status||'Available')} <span class="chev">▾</span>`;
+  pill.innerHTML = `<span class="pill-label">${emoji} ${esc(m.status||'Available')}</span><span class="pill-chev">∨</span>`;
 
   if (isMe) {
     const sel = document.createElement('select');
@@ -1093,23 +1209,19 @@ function makeMC(m) {
      'Heads-down coding','Available','In a meeting','Ready for lunch',
      'Deep work — do not disturb','Taking a break'].forEach(s => {
        const o = document.createElement('option');
-       o.value=s; o.textContent=s;
-       if(s===m.status) o.selected=true;
+       o.value=s; o.textContent=s; if(s===m.status) o.selected=true;
        sel.appendChild(o);
      });
     sel.onchange = () => { qStatus(sel.value); setTimeout(renderSquad,150); };
-    sw.appendChild(pill);
-    sw.appendChild(sel);
+    sw.appendChild(pill); sw.appendChild(sel);
   } else {
-    pill.style.cursor='default';
-    sw.appendChild(pill);
+    pill.style.cursor='default'; sw.appendChild(pill);
   }
   wrap.appendChild(sw);
 
-  // spotify mini badge
   if (m.spotify) {
     const sp = document.createElement('div');
-    sp.style.cssText='font-size:10px;font-weight:700;color:#15803d;background:var(--green-lt);border-radius:999px;padding:2px 8px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center';
+    sp.className = 'sp-track-label';
     sp.textContent = '♪ ' + m.spotify.track;
     wrap.appendChild(sp);
   }
@@ -1136,13 +1248,6 @@ function updateStatus() {
   sendPresence({status:s}); toast('Status updated!');
 }
 
-let moodT=null;
-function updateMood(v) {
-  byId('me-moodv').textContent=v;
-  clearTimeout(moodT);
-  moodT=setTimeout(()=>sendPresence({mood:+v}),300);
-}
-
 function qStatus(s) {
   byId('me-status-txt').textContent=s;
   const sel=byId('me-status-sel');
@@ -1155,43 +1260,77 @@ function qStatus(s) {
 // ═══════════════════════════════════════════════════════════
 //  SPOTIFY
 // ═══════════════════════════════════════════════════════════
+function setSpotifyUI(connected) {
+  const label = connected ? 'Disconnect Spotify' : 'Connect Spotify';
+  byId('sp-btn').textContent    = label;
+  byId('sp-btn-me').textContent = '🎵 ' + label;
+}
+
 function toggleSpotify() { spotifyOn ? disconnectSpotify() : connectSpotify(); }
 
 function connectSpotify() {
-  const url=`${API}/auth/spotify?memberId=${S.memberId}&squadCode=${S.code}`;
-  const p=window.open(url,'spotify-auth','width=480,height=700,left=200,top=100');
-  if(!p){toast('Allow pop-ups to connect Spotify',true);return;}
+  // Must open popup synchronously (direct user gesture) — no awaits before this line
+  const url = `${API}/auth/spotify?memberId=${S.memberId}&squadCode=${S.code}`;
+  const popup = window.open(url, 'spotify-auth', 'width=480,height=700,left=200,top=100');
+  if (!popup) { toast('Allow pop-ups to connect Spotify', true); return; }
+
   function onMsg(e) {
-    if(e.data?.type==='SPOTIFY_CONNECTED'){
-      window.removeEventListener('message',onMsg);
-      spotifyOn=true; byId('sp-btn').textContent='Disconnect';
+    if (!e.data || typeof e.data !== 'object') return;
+    if (e.data.type === 'SPOTIFY_CONNECTED') {
+      window.removeEventListener('message', onMsg);
+      spotifyOn = true;
+      setSpotifyUI(true);
       toast('Spotify connected! 🎵');
       pollNP();
-      spTimer=setInterval(pollNP,15000);
-    } else if(e.data?.type==='SPOTIFY_ERROR'){
-      window.removeEventListener('message',onMsg);
-      toast('Spotify: '+(e.data.error||'error'),true);
+      if (spTimer) clearInterval(spTimer);
+      spTimer = setInterval(pollNP, 15000);
+    } else if (e.data.type === 'SPOTIFY_ERROR') {
+      window.removeEventListener('message', onMsg);
+      toast('Spotify: ' + (e.data.error || 'error'), true);
     }
   }
-  window.addEventListener('message',onMsg);
+  window.addEventListener('message', onMsg);
 }
 
 async function disconnectSpotify() {
-  clearInterval(spTimer); spotifyOn=false;
-  byId('sp-btn').textContent='Connect Spotify';
-  renderSP(null); sendPresence({spotify:null});
-  try{await fetch(`${API}/auth/spotify?memberId=${S.memberId}&squadCode=${S.code}`,{method:'DELETE'});}catch{}
+  clearInterval(spTimer);
+  spTimer = null;
+  spotifyOn = false;
+  setSpotifyUI(false);
+  renderSP(null);
+  sendPresence({ spotify: null });
+  try { await fetch(`${API}/auth/spotify?memberId=${S.memberId}&squadCode=${S.code}`, { method: 'DELETE' }); } catch {}
   toast('Spotify disconnected');
 }
 
+async function checkSpotifyStatus() {
+  // Restore connected state after page reload / re-join without re-authing
+  try {
+    const r = await fetch(`${API}/auth/spotify/status?memberId=${S.memberId}`);
+    if (!r.ok) return;
+    const d = await r.json();
+    if (d.connected) {
+      spotifyOn = true;
+      setSpotifyUI(true);
+      pollNP();
+      if (spTimer) clearInterval(spTimer);
+      spTimer = setInterval(pollNP, 15000);
+    }
+  } catch {}
+}
+
 async function pollNP() {
-  try{
-    const r=await fetch(`${API}/auth/spotify/now-playing?memberId=${S.memberId}&squadCode=${S.code}`);
-    if(r.status===401){clearInterval(spTimer);spotifyOn=false;byId('sp-btn').textContent='Connect Spotify';renderSP(null);return;}
-    if(!r.ok) return;
-    const d=await r.json();
-    renderSP(d.playing?d:null, !d.playing);
-  }catch{}
+  if (!S.memberId) return;
+  try {
+    const r = await fetch(`${API}/auth/spotify/now-playing?memberId=${S.memberId}&squadCode=${S.code}`);
+    if (r.status === 401) {
+      clearInterval(spTimer); spTimer = null;
+      spotifyOn = false; setSpotifyUI(false); renderSP(null); return;
+    }
+    if (!r.ok) return;
+    const d = await r.json();
+    renderSP(d.playing ? d : null, !d.playing);
+  } catch {}
 }
 
 function renderSP(sp, idle=false) {
@@ -1216,36 +1355,6 @@ function renderSP(sp, idle=false) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  POLL
-// ═══════════════════════════════════════════════════════════
-function renderPoll() {
-  if(!S.poll) return;
-  byId('poll-q').textContent=S.poll.question;
-  const con=byId('poll-opts'); con.innerHTML='';
-  const total=(S.pollVotes||[]).reduce((a,b)=>a+b,0);
-  S.poll.options.forEach((opt,i)=>{
-    const votes=(S.pollVotes||[])[i]||0;
-    const pct=total>0?Math.round(votes/total*100):0;
-    const voted=S.myVote>=0;
-    const div=document.createElement('div');
-    div.className='poll-opt'+(S.myVote===i?' voted':'');
-    div.innerHTML=`<div class="poll-bar" style="width:${voted?pct:0}%"></div><span>${esc(opt)}</span>${voted?`<span class="poll-pct">${pct}%</span>`:''}`;
-    if(!voted) div.onclick=()=>castVote(i);
-    con.appendChild(div);
-  });
-  if(S.myVote>=0) byId('poll-note').style.display='block';
-}
-
-async function castVote(i) {
-  try{
-    const r=await api('POST',`/squads/${S.code}/poll/vote`,{memberId:S.memberId,optionIndex:i});
-    S.myVote=i; S.pollVotes=r.pollVotes;
-    byId('poll-note').style.display='block';
-    renderPoll(); toast('Vote recorded! 🗳️');
-  }catch(e){toast(e.message,true);}
-}
-
-// ═══════════════════════════════════════════════════════════
 //  EXPIRY
 // ═══════════════════════════════════════════════════════════
 function startExpiry() {
@@ -1259,7 +1368,7 @@ function updateExpiry() {
   const ban=byId('exp-banner'), txt=byId('exp-txt'), ext=byId('btn-extend');
   if(rem<=0){txt.textContent='⚠️ Squad expired.';ban.classList.add('warn');return;}
   const h=Math.floor(rem/3600000), mn=Math.floor((rem%3600000)/60000);
-  txt.textContent=`⏱ Expires in ${h>0?h+'h ':''} ${mn}m`;
+  txt.textContent=`⏱ Expires in ${h>0?h+'h ':''}${mn}m`;
   if(rem<2*3600000){ban.classList.add('warn');if(S.me?.isCreator)ext.style.display='inline-flex';}
   else{ban.classList.remove('warn');ext.style.display='none';}
 }
